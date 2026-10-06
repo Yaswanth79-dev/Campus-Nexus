@@ -9,9 +9,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 interface AuthContextType extends AuthState {
   signInWithGoogle: () => Promise<void>;
-  signInWithEmail: (email: string, password: string) => Promise<AuthResult>;
-  signUpWithEmail: (email: string, password: string, fullName: string) => Promise<AuthResult>;
-  resetPasswordForEmail: (email: string) => Promise<{ success: boolean; error?: string }>;
+
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -269,132 +267,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const signInWithEmail = useCallback(async (email: string, password: string): Promise<AuthResult> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const { data, error: signInErr } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInErr) {
-        setIsLoading(false);
-        setError(signInErr.message);
-        return { success: false, error: signInErr.message };
-      }
-
-      if (data.session && data.user) {
-        const profile = await fetchUserProfile(data.user.id, data.user.email || '');
-        if (profile) {
-          if (profile.isActive === false) {
-            await supabase.auth.signOut();
-            deleteCookie(ROLE_COOKIE_KEY);
-            deleteCookie(AUTH_COOKIE_KEY);
-            setUser(null);
-            setRole(null);
-            setIsLoading(false);
-            const errMsg = 'This account has not yet been provisioned by the institution.';
-            setError(errMsg);
-            return { success: false, error: errMsg };
-          }
-          setUser(profile);
-          setRole(profile.role);
-          setCookie(ROLE_COOKIE_KEY, profile.role);
-          setCookie(AUTH_COOKIE_KEY, 'true');
-          setIsLoading(false);
-          return { success: true, role: profile.role };
-        }
-      }
-      
-      setIsLoading(false);
-      return { success: false, error: 'Login failed.' };
-    } catch (err: unknown) {
-      console.error('Sign in error:', err);
-      setIsLoading(false);
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      const errMsg = errorMessage || 'An error occurred during sign in.';
-      setError(errMsg);
-      return { success: false, error: errMsg };
-    }
-  }, [fetchUserProfile]);
-
-  const signUpWithEmail = useCallback(async (email: string, password: string, fullName: string): Promise<AuthResult> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const { data, error: signUpErr } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-          emailRedirectTo: `${origin}/auth/callback`,
-        }
-      });
-
-      if (signUpErr) {
-        setIsLoading(false);
-        setError(signUpErr.message);
-        return { success: false, error: signUpErr.message };
-      }
-
-      // If email confirmation is not required, user might be signed in immediately
-      if (data.session && data.user) {
-         // Profile will be created by trigger, but it might take a moment
-         const profile = await fetchUserProfile(data.user.id, data.user.email || '');
-         if (profile && profile.isActive === false) {
-             await supabase.auth.signOut();
-             deleteCookie(ROLE_COOKIE_KEY);
-             deleteCookie(AUTH_COOKIE_KEY);
-             setUser(null);
-             setRole(null);
-             setIsLoading(false);
-             return { success: true, error: 'Registration successful. Account awaiting institution approval.' };
-         } else if (profile) {
-             setIsLoading(false);
-             return { success: true, role: profile.role };
-         }
-      }
-      
-      setIsLoading(false);
-      return { success: true };
-    } catch (err: unknown) {
-      console.error('Sign up error:', err);
-      setIsLoading(false);
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      const errMsg = errorMessage || 'An error occurred during registration.';
-      setError(errMsg);
-      return { success: false, error: errMsg };
-    }
-  }, [fetchUserProfile]);
-
-  const resetPasswordForEmail = useCallback(async (email: string): Promise<{ success: boolean; error?: string }> => {
-    setError(null);
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${origin}/reset-password`,
-      });
-      
-      if (error) {
-        setError(error.message);
-        return { success: false, error: error.message };
-      }
-      return { success: true };
-    } catch (err: unknown) {
-      console.error('Reset password error:', err);
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      const errMsg = errorMessage || 'An error occurred while sending reset instructions.';
-      setError(errMsg);
-      return { success: false, error: errMsg };
-    }
-  }, []);
 
   const signOut = useCallback(async () => {
     setIsLoading(true);
@@ -422,9 +294,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: Boolean(user && role),
         error,
         signInWithGoogle,
-        signInWithEmail,
-        signUpWithEmail,
-        resetPasswordForEmail,
+
         signOut,
         refreshProfile,
       }}

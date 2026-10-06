@@ -136,7 +136,6 @@ export const config = {
     '/faculty/:path*',
     '/hod/:path*',
     '/login',
-    '/reset-password',
     '/unauthorized',
   ],
 };
