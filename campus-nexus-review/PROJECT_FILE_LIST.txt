@@ -1,0 +1,337 @@
+﻿============================================================
+  Campus Nexus â€” Code Review Package
+  Generated: 2026-09-07 12:15:44
+============================================================
+
+## 1. PROJECT DIRECTORY STRUCTURE
+(Excludes: node_modules/, .next/, .git/, .temp/, .env.local,
+ package-lock.json, tsconfig.tsbuildinfo, favicon.ico)
+
+D:\IT Nexus  (project root)
+|-- .env.example
+|-- .gitignore
+|-- AGENTS.md
+|-- app/
+|   |-- auth/
+|   |   |-- callback/
+|   |   |   |-- route.ts
+|   |-- faculty/
+|   |   |-- announcements/
+|   |   |   |-- page.tsx
+|   |   |-- concerns/
+|   |   |   |-- page.tsx
+|   |   |-- dashboard/
+|   |   |   |-- page.tsx
+|   |   |-- innovation/
+|   |   |   |-- page.tsx
+|   |   |-- layout.tsx
+|   |   |-- mentoring/
+|   |   |   |-- page.tsx
+|   |   |-- notifications/
+|   |   |   |-- page.tsx
+|   |   |-- opportunities/
+|   |   |   |-- page.tsx
+|   |   |-- resources/
+|   |   |   |-- page.tsx
+|   |   |-- settings/
+|   |   |   |-- page.tsx
+|   |   |-- students/
+|   |   |   |-- page.tsx
+|   |-- globals.css
+|   |-- hod/
+|   |   |-- analytics/
+|   |   |   |-- page.tsx
+|   |   |-- announcements/
+|   |   |   |-- page.tsx
+|   |   |-- dashboard/
+|   |   |   |-- page.tsx
+|   |   |-- faculty/
+|   |   |   |-- page.tsx
+|   |   |-- feedback/
+|   |   |   |-- page.tsx
+|   |   |-- innovation/
+|   |   |   |-- page.tsx
+|   |   |-- layout.tsx
+|   |   |-- mentoring/
+|   |   |   |-- page.tsx
+|   |   |-- notifications/
+|   |   |   |-- page.tsx
+|   |   |-- opportunities/
+|   |   |   |-- page.tsx
+|   |   |-- reports/
+|   |   |   |-- page.tsx
+|   |   |-- resources/
+|   |   |   |-- page.tsx
+|   |   |-- settings/
+|   |   |   |-- page.tsx
+|   |   |-- students/
+|   |   |   |-- page.tsx
+|   |-- layout.tsx
+|   |-- login/
+|   |   |-- page.tsx
+|   |-- not-found.tsx
+|   |-- page.tsx
+|   |-- reset-password/
+|   |   |-- page.tsx
+|   |-- student/
+|   |   |-- achievements/
+|   |   |   |-- page.tsx
+|   |   |-- career/
+|   |   |   |-- page.tsx
+|   |   |-- certifications/
+|   |   |   |-- page.tsx
+|   |   |-- dashboard/
+|   |   |   |-- page.tsx
+|   |   |-- feedback/
+|   |   |   |-- page.tsx
+|   |   |-- innovation/
+|   |   |   |-- page.tsx
+|   |   |-- internships/
+|   |   |   |-- page.tsx
+|   |   |-- layout.tsx
+|   |   |-- learning/
+|   |   |   |-- page.tsx
+|   |   |-- notifications/
+|   |   |   |-- page.tsx
+|   |   |-- opportunities/
+|   |   |   |-- page.tsx
+|   |   |-- profile/
+|   |   |   |-- page.tsx
+|   |   |-- projects/
+|   |   |   |-- page.tsx
+|   |   |-- resources/
+|   |   |   |-- page.tsx
+|   |   |-- settings/
+|   |   |   |-- page.tsx
+|   |   |-- skill-gap/
+|   |   |   |-- page.tsx
+|   |   |-- skills/
+|   |   |   |-- page.tsx
+|   |-- unauthorized/
+|   |   |-- page.tsx
+|-- campus-nexus-review/
+|-- CLAUDE.md
+|-- components/
+|   |-- layout/
+|   |   |-- dashboard-layout.tsx
+|   |   |-- header.tsx
+|   |   |-- mobile-nav.tsx
+|   |   |-- module-placeholder.tsx
+|   |   |-- nav-icon.tsx
+|   |   |-- page-header.tsx
+|   |   |-- sidebar.tsx
+|   |-- navigation/
+|   |   |-- nav-items.ts
+|   |   |-- role-badge.tsx
+|   |-- ui/
+|   |   |-- avatar.tsx
+|   |   |-- badge.tsx
+|   |   |-- button.tsx
+|   |   |-- card.tsx
+|   |   |-- dropdown.tsx
+|   |   |-- empty-state.tsx
+|   |   |-- error-state.tsx
+|   |   |-- input.tsx
+|   |   |-- loading-spinner.tsx
+|   |   |-- modal.tsx
+|   |   |-- select.tsx
+|   |   |-- stat-card.tsx
+|   |   |-- table.tsx
+|   |   |-- tabs.tsx
+|   |   |-- textarea.tsx
+|   |   |-- toast.tsx
+|-- docs/
+|   |-- AUTHENTICATION.md
+|   |-- DATABASE.md
+|   |-- SECURITY.md
+|   |-- WORKFLOW.md
+|-- eslint.config.mjs
+|-- hooks/
+|   |-- use-auth.ts
+|   |-- use-disclosure.ts
+|   |-- use-toast.ts
+|-- lib/
+|   |-- auth/
+|   |   |-- auth-context.tsx
+|   |   |-- guards.tsx
+|   |-- supabase/
+|   |   |-- client.ts
+|   |   |-- middleware.ts
+|   |   |-- server.ts
+|   |-- utils/
+|   |   |-- cn.ts
+|   |   |-- formatters.ts
+|-- middleware.ts
+|-- next.config.ts
+|-- next-env.d.ts
+|-- package.json
+|-- postcss.config.mjs
+|-- public/
+|   |-- file.svg
+|   |-- globe.svg
+|   |-- next.svg
+|   |-- vercel.svg
+|   |-- window.svg
+|-- README.md
+|-- supabase/
+|   |-- migrations/
+|   |   |-- 20260820000001_create_core_schema.sql
+|   |   |-- 20260820000002_seed_dev_users.sql
+|   |   |-- 20260826000002_expand_profiles_schema.sql
+|   |   |-- 20260826000003_create_student_features.sql
+|   |   |-- 20260826000004_create_faculty_hod_features.sql
+|   |   |-- 20260826000005_seed_demo_data.sql
+|-- tsconfig.json
+|-- types/
+|   |-- auth.ts
+|   |-- dashboard.ts
+|   |-- database.ts
+|   |-- navigation.ts
+|   |-- roles.ts
+
+------------------------------------------------------------
+## 2. FILES INCLUDED IN EACH ZIP
+
+### ZIP0_root_config.zip  (~6.9 KB, 11 files)
+  .env.example
+  .gitignore
+  AGENTS.md
+  CLAUDE.md
+  eslint.config.mjs
+  next.config.ts
+  next-env.d.ts
+  package.json
+  postcss.config.mjs
+  README.md
+  tsconfig.json
+
+### ZIP1_project_architecture.zip  (~32.8 KB, 15 files)
+  docs\AUTHENTICATION.md
+  docs\DATABASE.md
+  docs\SECURITY.md
+  docs\WORKFLOW.md
+  supabase\migrations\20260820000001_create_core_schema.sql
+  supabase\migrations\20260820000002_seed_dev_users.sql
+  supabase\migrations\20260826000002_expand_profiles_schema.sql
+  supabase\migrations\20260826000003_create_student_features.sql
+  supabase\migrations\20260826000004_create_faculty_hod_features.sql
+  supabase\migrations\20260826000005_seed_demo_data.sql
+  types\auth.ts
+  types\dashboard.ts
+  types\database.ts
+  types\navigation.ts
+  types\roles.ts
+
+### ZIP2_authentication.zip  (~8.4 KB, 6 files)
+  lib\auth\auth-context.tsx
+  lib\auth\guards.tsx
+  lib\supabase\client.ts
+  lib\supabase\middleware.ts
+  lib\supabase\server.ts
+  middleware.ts
+
+### ZIP3_student_portal.zip  (~67.6 KB, 17 files)
+  app\student\achievements\page.tsx
+  app\student\career\page.tsx
+  app\student\certifications\page.tsx
+  app\student\dashboard\page.tsx
+  app\student\feedback\page.tsx
+  app\student\innovation\page.tsx
+  app\student\internships\page.tsx
+  app\student\layout.tsx
+  app\student\learning\page.tsx
+  app\student\notifications\page.tsx
+  app\student\opportunities\page.tsx
+  app\student\profile\page.tsx
+  app\student\projects\page.tsx
+  app\student\resources\page.tsx
+  app\student\settings\page.tsx
+  app\student\skill-gap\page.tsx
+  app\student\skills\page.tsx
+
+### ZIP4_faculty_hod_portals.zip  (~71.8 KB, 25 files)
+  app\faculty\announcements\page.tsx
+  app\faculty\concerns\page.tsx
+  app\faculty\dashboard\page.tsx
+  app\faculty\innovation\page.tsx
+  app\faculty\layout.tsx
+  app\faculty\mentoring\page.tsx
+  app\faculty\notifications\page.tsx
+  app\faculty\opportunities\page.tsx
+  app\faculty\resources\page.tsx
+  app\faculty\settings\page.tsx
+  app\faculty\students\page.tsx
+  app\hod\analytics\page.tsx
+  app\hod\announcements\page.tsx
+  app\hod\dashboard\page.tsx
+  app\hod\faculty\page.tsx
+  app\hod\feedback\page.tsx
+  app\hod\innovation\page.tsx
+  app\hod\layout.tsx
+  app\hod\mentoring\page.tsx
+  app\hod\notifications\page.tsx
+  app\hod\opportunities\page.tsx
+  app\hod\reports\page.tsx
+  app\hod\resources\page.tsx
+  app\hod\settings\page.tsx
+  app\hod\students\page.tsx
+
+### ZIP5_components_shared_ui.zip  (~29.7 KB, 31 files)
+  app\globals.css
+  app\layout.tsx
+  app\page.tsx
+  components\layout\dashboard-layout.tsx
+  components\layout\header.tsx
+  components\layout\mobile-nav.tsx
+  components\layout\module-placeholder.tsx
+  components\layout\nav-icon.tsx
+  components\layout\page-header.tsx
+  components\layout\sidebar.tsx
+  components\navigation\nav-items.ts
+  components\navigation\role-badge.tsx
+  components\ui\avatar.tsx
+  components\ui\badge.tsx
+  components\ui\button.tsx
+  components\ui\card.tsx
+  components\ui\dropdown.tsx
+  components\ui\empty-state.tsx
+  components\ui\error-state.tsx
+  components\ui\input.tsx
+  components\ui\loading-spinner.tsx
+  components\ui\modal.tsx
+  components\ui\select.tsx
+  components\ui\stat-card.tsx
+  components\ui\table.tsx
+  components\ui\tabs.tsx
+  components\ui\textarea.tsx
+  components\ui\toast.tsx
+  hooks\use-auth.ts
+  hooks\use-disclosure.ts
+  hooks\use-toast.ts
+
+------------------------------------------------------------
+## 3. INTENTIONALLY EXCLUDED FILES / FOLDERS
+
+  node_modules/          - dependency cache (restore with: npm install)
+  .next/                 - Next.js build output
+  .git/                  - version-control history
+  .env.local             - secrets/credentials (NEVER shared)
+  package-lock.json      - lock file (regenerated by npm install)
+  tsconfig.tsbuildinfo   - incremental TS build cache
+  supabase/.temp/        - local Supabase temp files
+  public/favicon.ico     - binary asset
+
+------------------------------------------------------------
+## 4. RECOMMENDED UPLOAD ORDER FOR AI ASSISTANT
+
+  1. ZIP0_root_config.zip             - package.json, configs, README
+  2. ZIP1_project_architecture.zip    - DB schema, types, docs
+  3. ZIP2_authentication.zip          - auth layer and middleware
+  4. ZIP5_components_shared_ui.zip    - shared UI (referenced by portals)
+  5. ZIP3_student_portal.zip          - student-facing pages
+  6. ZIP4_faculty_hod_portals.zip     - faculty and HOD pages
+
+  IMPORTANT: Do NOT share .env.local â€” it contains live secrets.
+  The AI assistant only needs .env.example to understand env variables.
+
+============================================================
