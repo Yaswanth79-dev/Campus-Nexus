@@ -36,15 +36,8 @@ export default function StudentCareerPage() {
   const [placementStatus, setPlacementStatus] = useState('Eligible');
   const [higherStudies, setHigherStudies] = useState(false);
 
-  // Local milestones state
-  const [milestones, setMilestones] = useState([
-    { id: 1, title: 'Core Data Structures & Algorithms Foundations', completed: true },
-    { id: 2, title: 'Database Design & Relational PostgreSQL Optimization', completed: true },
-    { id: 3, title: 'Full-Stack Web Architecture (Next.js / FastAPI)', completed: true },
-    { id: 4, title: 'Industry Cloud Certification (AWS Solutions Architect)', completed: true },
-    { id: 5, title: 'Summer Production Internship in Software Engineering', completed: false },
-    { id: 6, title: 'Capstone Distributed Systems Project', completed: false },
-  ]);
+  // Database-backed milestones state
+  const [milestones, setMilestones] = useState<{ id: string, title: string, completed: boolean }[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -54,13 +47,88 @@ export default function StudentCareerPage() {
       setInternshipStatus(user.internshipStatus || 'Not Started');
       setPlacementStatus(user.placementStatus || 'Not Eligible');
       setHigherStudies(user.higherStudies || false);
+      
+      // Load milestones from database
+      const loadMilestones = async () => {
+        try {
+          const supabase = getSupabaseBrowserClient();
+          
+          // Fetch global milestones
+          const { data: globalMilestones, error: globalErr } = (await supabase
+            .from('career_milestones')
+            .select('id, title, display_order')
+            .order('display_order', { ascending: true })) as any;
+            
+          if (globalErr) throw globalErr;
+          
+          // Fetch student milestones
+          const { data: studentMilestones, error: studentErr } = (await supabase
+            .from('student_career_milestones')
+            .select('milestone_id, is_completed')
+            .eq('student_id', user.id)) as any;
+            
+          if (studentErr) throw studentErr;
+          
+          // Merge
+          if (globalMilestones) {
+            const merged = globalMilestones.map((gm: any) => {
+              const sm = studentMilestones?.find((s: any) => s.milestone_id === gm.id);
+              return {
+                id: gm.id,
+                title: gm.title,
+                completed: sm ? sm.is_completed : false,
+              };
+            });
+            setMilestones(merged);
+          }
+        } catch (err) {
+          console.error('Error loading milestones:', err);
+        }
+      };
+      loadMilestones();
     }
   }, [user]);
 
-  const toggleMilestone = (id: number) => {
+  const toggleMilestone = async (id: string) => {
+    if (!user) return;
+    
+    // Find current state
+    const currentMilestone = milestones.find((m) => m.id === id);
+    if (!currentMilestone) return;
+    
+    const newCompletedState = !currentMilestone.completed;
+    
+    // Optimistic UI update
     setMilestones((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, completed: !m.completed } : m))
+      prev.map((m) => (m.id === id ? { ...m, completed: newCompletedState } : m))
     );
+    
+    // Persist to DB
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await (supabase.from('student_career_milestones') as any)
+        .upsert({
+          student_id: user.id,
+          milestone_id: id,
+          is_completed: newCompletedState,
+          completed_at: newCompletedState ? new Date().toISOString() : null,
+        }, {
+          onConflict: 'student_id, milestone_id'
+        });
+        
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('Error updating milestone:', err);
+      // Revert optimistic update
+      setMilestones((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, completed: !newCompletedState } : m))
+      );
+      toast({
+        type: 'error',
+        title: 'Update Failed',
+        message: 'Unable to save milestone. Please try again.',
+      });
+    }
   };
 
   const handleSave = async () => {
@@ -97,7 +165,7 @@ export default function StudentCareerPage() {
   };
 
   const completedCount = milestones.filter((m) => m.completed).length;
-  const readinessPct = Math.round((completedCount / milestones.length) * 100);
+  const readinessPct = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
 
   return (
     <div className="space-y-6">

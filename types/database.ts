@@ -243,6 +243,75 @@ export interface Database {
           },
         ];
       };
+      career_milestones: {
+        Row: {
+          id: string;
+          milestone_key: string;
+          title: string;
+          display_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          milestone_key: string;
+          title: string;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          milestone_key?: string;
+          title?: string;
+          display_order?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      student_career_milestones: {
+        Row: {
+          id: string;
+          student_id: string;
+          milestone_id: string;
+          is_completed: boolean;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          milestone_id: string;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          student_id?: string;
+          milestone_id?: string;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'student_career_milestones_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedSchema: 'public';
+          },
+          {
+            foreignKeyName: 'student_career_milestones_milestone_id_fkey';
+            columns: ['milestone_id'];
+            isOneToOne: false;
+            referencedRelation: 'career_milestones';
+            referencedSchema: 'public';
+          }
+        ];
+      };
       student_skills: {
         Row: {
           id: string;
@@ -456,6 +525,9 @@ export interface Database {
           description: string | null;
           estimated_time: string | null;
           is_active: boolean;
+          department: string | null;
+          created_by: string | null;
+          passing_score: number | null;
           created_at: string;
         };
         Insert: {
@@ -469,6 +541,9 @@ export interface Database {
           description?: string | null;
           estimated_time?: string | null;
           is_active?: boolean;
+          department?: string | null;
+          created_by?: string | null;
+          passing_score?: number | null;
           created_at?: string;
         };
         Update: {
@@ -482,6 +557,9 @@ export interface Database {
           description?: string | null;
           estimated_time?: string | null;
           is_active?: boolean;
+          department?: string | null;
+          created_by?: string | null;
+          passing_score?: number | null;
           created_at?: string;
         };
         Relationships: [];
@@ -492,7 +570,7 @@ export interface Database {
           student_id: string;
           module_id: string | null;
           module_title: string;
-          category: 'Programming' | 'Practice' | 'Course' | 'Quiz' | 'Test';
+          category: string;
           topic: string;
           score: number | null;
           credits_earned: number;
@@ -505,7 +583,7 @@ export interface Database {
           student_id: string;
           module_id?: string | null;
           module_title: string;
-          category: 'Programming' | 'Practice' | 'Course' | 'Quiz' | 'Test';
+          category: string;
           topic: string;
           score?: number | null;
           credits_earned?: number;
@@ -518,7 +596,7 @@ export interface Database {
           student_id?: string;
           module_id?: string | null;
           module_title?: string;
-          category?: 'Programming' | 'Practice' | 'Course' | 'Quiz' | 'Test';
+          category?: string;
           topic?: string;
           score?: number | null;
           credits_earned?: number;
@@ -527,6 +605,76 @@ export interface Database {
           created_at?: string;
         };
         Relationships: [];
+      };
+      learning_quiz_questions: {
+        Row: {
+          id: string;
+          module_id: string;
+          question_text: string;
+          explanation: string | null;
+          display_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          module_id: string;
+          question_text: string;
+          explanation?: string | null;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          module_id?: string;
+          question_text?: string;
+          explanation?: string | null;
+          display_order?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'learning_quiz_questions_module_id_fkey';
+            columns: ['module_id'];
+            isOneToOne: false;
+            referencedRelation: 'learning_modules';
+            referencedSchema: 'public';
+          }
+        ];
+      };
+      learning_quiz_options: {
+        Row: {
+          id: string;
+          question_id: string;
+          option_text: string;
+          is_correct: boolean;
+          display_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          question_id: string;
+          option_text: string;
+          is_correct?: boolean;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          question_id?: string;
+          option_text?: string;
+          is_correct?: boolean;
+          display_order?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'learning_quiz_options_question_id_fkey';
+            columns: ['question_id'];
+            isOneToOne: false;
+            referencedRelation: 'learning_quiz_questions';
+            referencedSchema: 'public';
+          }
+        ];
       };
       feedback_grievances: {
         Row: {

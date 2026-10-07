@@ -27,52 +27,7 @@ export default function StudentSettingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Password state
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const handlePasswordUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPasswordError(null);
-
-    if (newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters long.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('New passwords do not match.');
-      return;
-    }
-
-    setIsUpdatingPassword(true);
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-
-      if (error) throw error;
-
-      toast({
-        type: 'success',
-        title: 'Password Updated',
-        message: 'Your account password has been changed successfully.',
-      });
-
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err: any) {
-      setPasswordError(err.message || 'Failed to update password.');
-      toast({
-        type: 'error',
-        title: 'Update Failed',
-        message: err.message,
-      });
-    } finally {
-      setIsUpdatingPassword(false);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -90,77 +45,26 @@ export default function StudentSettingsPage() {
         {/* Left 2 Columns: Password & Security */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Change Password Form */}
+          {/* Authentication Overview */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <KeyRound className="w-4 h-4 text-blue-600" /> Change Account Password
+                <KeyRound className="w-4 h-4 text-blue-600" /> Authentication Method
               </CardTitle>
               <CardDescription>
-                Update your login password used across the Campus Nexus portal
+                How you sign in to the Campus Nexus portal
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {passwordError && (
-                <div className="mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                  <span>{passwordError}</span>
-                </div>
-              )}
-
-              <form onSubmit={handlePasswordUpdate} className="space-y-4">
-                <div className="relative">
-                  <Input
-                    label="New Password"
-                    type={showPass ? 'text' : 'password'}
-                    required
-                    placeholder="Minimum 8 characters"
-                    value={newPassword}
-                    onChange={(e) => {
-                      setNewPassword(e.target.value);
-                      setPasswordError(null);
-                    }}
-                    leadingIcon={<Lock className="w-4 h-4" />}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass((v) => !v)}
-                    className="absolute right-3 top-[34px] text-slate-400 hover:text-slate-600"
-                    tabIndex={-1}
-                  >
-                    {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-
+              <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
                 <div>
-                  <Input
-                    label="Confirm New Password"
-                    type={showPass ? 'text' : 'password'}
-                    required
-                    placeholder="Re-enter new password"
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                      setPasswordError(null);
-                    }}
-                    leadingIcon={<Lock className="w-4 h-4" />}
-                  />
-                  {confirmPassword.length > 0 && newPassword === confirmPassword && (
-                    <p className="text-[11px] text-emerald-600 mt-1 flex items-center gap-1 font-medium">
-                      <CheckCircle2 className="w-3 h-3" /> Passwords match
-                    </p>
-                  )}
+                  <p className="text-sm font-bold text-blue-900">Google Sign-In Active</p>
+                  <p className="text-xs text-blue-800 mt-1 leading-relaxed">
+                    Your Campus Nexus account is securely authenticated through Google Sign-In. Password management is handled entirely by your Google account.
+                  </p>
                 </div>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  isLoading={isUpdatingPassword}
-                  disabled={!newPassword || newPassword !== confirmPassword || isUpdatingPassword}
-                >
-                  Update Password
-                </Button>
-              </form>
+              </div>
             </CardContent>
           </Card>
 

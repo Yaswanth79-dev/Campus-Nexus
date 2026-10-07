@@ -36,6 +36,11 @@ export default function StudentDashboardPage() {
   const [opportunities, setOpportunities] = useState<Tables<'opportunities'>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Dynamic additions
+  const [mentor, setMentor] = useState<{name: string, email: string, designation: string, department: string} | null>(null);
+  const [nextSession, setNextSession] = useState<{date: string, topic: string} | null>(null);
+  const [completedActivities, setCompletedActivities] = useState<any[]>([]);
+
   useEffect(() => {
     async function loadDashboardData() {
       if (!user) return;
@@ -87,6 +92,70 @@ export default function StudentDashboardPage() {
           .eq('is_active', true)
           .limit(2);
         if (opData) setOpportunities(opData as Tables<'opportunities'>[]);
+
+        // 6. Fetch Faculty Mentor
+        const { data: mentorAssignment } = (await supabase
+          .from('faculty_mentor_assignments')
+          .select('faculty_id')
+          .eq('student_id', user.id)
+          .single()) as any;
+
+        if (mentorAssignment?.faculty_id) {
+          const { data: mentorProfile } = (await supabase
+            .from('profiles')
+            .select('full_name, email, department')
+            .eq('id', mentorAssignment.faculty_id)
+            .single()) as any;
+
+          const { data: facultyData } = (await supabase
+            .from('faculty')
+            .select('designation')
+            .eq('id', mentorAssignment.faculty_id)
+            .single()) as any;
+            
+          if (mentorProfile) {
+            setMentor({
+              name: mentorProfile.full_name,
+              email: mentorProfile.email,
+              department: mentorProfile.department,
+              designation: facultyData?.designation || 'Faculty',
+            });
+          }
+        }
+
+        // 7. Fetch Next Mentoring Session
+        const { data: sessions } = (await supabase
+          .from('mentoring_sessions')
+          .select('session_date, topic')
+          .eq('student_id', user.id)
+          .eq('status', 'Scheduled')
+          .order('session_date', { ascending: true })
+          .limit(1)) as any;
+          
+        if (sessions && sessions.length > 0) {
+          setNextSession({
+            date: new Date(sessions[0].session_date).toLocaleString('en-US', { weekday: 'long', hour: 'numeric', minute: '2-digit', hour12: true }),
+            topic: sessions[0].topic,
+          });
+        }
+
+        // 8. Fetch completed career milestones
+        const { data: milestoneLinks } = (await supabase
+          .from('student_career_milestones')
+          .select('milestone_id')
+          .eq('student_id', user.id)
+          .eq('is_completed', true)
+          .limit(3)) as any;
+          
+        if (milestoneLinks && milestoneLinks.length > 0) {
+          const milestoneIds = milestoneLinks.map((m: any) => m.milestone_id);
+          const { data: fetchedMilestones } = (await supabase
+            .from('career_milestones')
+            .select('id, title')
+            .in('id', milestoneIds)) as any;
+            
+          if (fetchedMilestones) setCompletedActivities(fetchedMilestones);
+        }
       } catch (err) {
         console.error('Error fetching student dashboard data:', err);
       } finally {
@@ -345,22 +414,36 @@ export default function StudentDashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Avatar name="Dr. Sarah Jenkins" role="faculty" size="lg" />
-                <div>
-                  <h4 className="font-bold text-sm text-slate-900">Dr. Sarah Jenkins</h4>
-                  <p className="text-xs text-slate-500">Associate Professor, {user?.department || 'IT'} Dept.</p>
-                  <p className="text-[11px] text-indigo-600 font-medium">sarah.jenkins@{user?.department?.toLowerCase() || 'it'}.college.edu</p>
-                </div>
-              </div>
+              {mentor ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <Avatar name={mentor.name} role="faculty" size="lg" />
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900">{mentor.name}</h4>
+                      <p className="text-xs text-slate-500">{mentor.designation}, {mentor.department} Dept.</p>
+                      <p className="text-[11px] text-indigo-600 font-medium">{mentor.email}</p>
+                    </div>
+                  </div>
 
-              <div className="p-3 rounded-lg bg-white border border-indigo-100 text-xs space-y-1.5">
-                <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-medium">Next Review Session:</span>
-                  <span className="font-bold text-slate-900">Thursday, 2:30 PM</span>
+                  {nextSession ? (
+                    <div className="p-3 rounded-lg bg-white border border-indigo-100 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between text-slate-600">
+                        <span className="font-medium">Next Review Session:</span>
+                        <span className="font-bold text-slate-900">{nextSession.date}</span>
+                      </div>
+                      <div className="text-[11px] text-slate-500">Topic: {nextSession.topic}</div>
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-lg bg-white border border-indigo-100 text-xs text-center text-slate-500">
+                      No upcoming sessions scheduled.
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="py-4 text-center text-xs text-slate-500">
+                  No mentor assigned yet.
                 </div>
-                <div className="text-[11px] text-slate-500">Topic: Semester 6 Capstone Project Milestone</div>
-              </div>
+              )}
 
               <div className="flex gap-2">
                 <Link href="/student/feedback" className="flex-1">
@@ -390,18 +473,16 @@ export default function StudentDashboardPage() {
                 <Badge variant="student" size="sm">Target: Batch {user?.batch || '2023-2027'}</Badge>
               </div>
               <div className="space-y-1.5 pt-1">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Core Backend & Database Foundations</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>2 Production Web Applications</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Industry AWS Certification</span>
-                </div>
+                {completedActivities.length > 0 ? (
+                  completedActivities.map((act) => (
+                    <div key={act.id} className="flex items-center gap-2 text-slate-600">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>{act.title}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-slate-400">No milestones achieved yet.</div>
+                )}
               </div>
             </CardContent>
           </Card>

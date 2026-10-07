@@ -136,6 +136,12 @@ export const FACULTY_NAV_ITEMS: NavItem[] = [
     section: 'development',
   },
   {
+    title: 'Learning Hub',
+    href: '/faculty/learning',
+    icon: 'BookOpenCheck',
+    section: 'engagement',
+  },
+  {
     title: 'Resources',
     href: '/faculty/resources',
     icon: 'BookOpen',
@@ -226,6 +232,12 @@ export const HOD_NAV_ITEMS: NavItem[] = [
     title: 'Innovation Hub',
     href: '/hod/innovation',
     icon: 'Lightbulb',
+    section: 'engagement',
+  },
+  {
+    title: 'Learning Hub',
+    href: '/hod/learning',
+    icon: 'BookOpenCheck',
     section: 'engagement',
   },
   {
