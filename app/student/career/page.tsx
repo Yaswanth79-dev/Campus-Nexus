@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import { PageHeader } from '@/components/layout/page-header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +20,6 @@ import {
   Briefcase,
   Layers,
   GraduationCap,
-  Save,
 } from 'lucide-react';
 
 export default function StudentCareerPage() {
@@ -169,54 +167,41 @@ export default function StudentCareerPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Career Roadmaps & Placement Readiness"
-        description="Define your professional aspirations, align skills with target job roles, and track milestone completion."
-        breadcrumbs={[
-          { label: 'Student Portal', href: '/student/dashboard' },
-          { label: 'Career' },
-        ]}
-        actions={
-          <Link href="/student/skill-gap">
-            <Button variant="outline">
-              <Target className="w-4 h-4 mr-1.5" /> Open Skill Gap Analyzer
-            </Button>
-          </Link>
-        }
-      />
+      {/* Editorial Header */}
+      <div className="pt-4 pb-8 mb-4 border-b border-slate-200/60">
+        <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+          Career Journey
+        </h1>
+        <p className="text-base text-slate-500 mt-2 max-w-2xl leading-relaxed">
+          Build your path toward your target role. Track your milestones and readiness.
+        </p>
+      </div>
 
-      {/* Target Goal Banner */}
-      <div className="rounded-2xl bg-linear-to-r from-blue-900 via-indigo-900 to-slate-900 p-6 text-white shadow-md relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Compass className="w-5 h-5 text-blue-400" />
-              <span className="text-xs uppercase font-bold tracking-wider text-blue-300">
-                Active Career Target
-              </span>
-              <Badge variant="student" size="sm">Target: Batch {user?.batch || '2023-2027'}</Badge>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">{careerGoalTitle || 'Full-Stack Engineer'}</h2>
-            <p className="text-sm text-blue-200 mt-1">
-              Domain: <strong className="text-white">{careerDomain || 'Cloud & Web Architecture'}</strong> • Target Role: <strong className="text-white">{preferredRole || 'SDE-1'}</strong>
-            </p>
+      {/* Premium Target Banner (Flat) */}
+      <div className="flex flex-col md:flex-row justify-between gap-8 py-6 mb-8">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1 block">Active Career Target</span>
+          <h2 className="text-3xl font-extrabold text-slate-900">{careerGoalTitle || 'Full-Stack Engineer'}</h2>
+          <div className="flex items-center gap-3 mt-3">
+            <span className="text-sm font-medium text-slate-600 border-r border-slate-200 pr-3">{careerDomain || 'Cloud & Web Architecture'}</span>
+            <span className="text-sm font-medium text-slate-600">{preferredRole || 'SDE-1'}</span>
           </div>
+        </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 min-w-[220px]">
-            <div className="flex justify-between items-center text-xs font-bold mb-1.5 text-blue-200">
-              <span>Industry Readiness</span>
-              <span className="text-emerald-400 font-extrabold">{readinessPct}%</span>
-            </div>
-            <div className="w-full bg-black/30 h-2.5 rounded-full overflow-hidden">
-              <div
-                className="bg-linear-to-r from-blue-400 to-emerald-400 h-2.5 rounded-full transition-all duration-500"
-                style={{ width: `${readinessPct}%` }}
-              />
-            </div>
-            <p className="text-[11px] text-blue-200/80 mt-1.5 font-medium">
-              {completedCount} of {milestones.length} benchmarks achieved
-            </p>
+        <div className="md:min-w-[280px]">
+          <div className="flex justify-between items-end mb-2">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Industry Readiness</span>
+            <span className="text-2xl font-black text-slate-900">{readinessPct}%</span>
           </div>
+          <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div
+              className="bg-indigo-600 h-full rounded-full transition-all duration-700 ease-out"
+              style={{ width: `${readinessPct}%` }}
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-2 font-medium">
+            {completedCount} of {milestones.length} milestones achieved
+          </p>
         </div>
       </div>
 
@@ -225,50 +210,36 @@ export default function StudentCareerPage() {
         {/* Left 2 Columns: Milestone Roadmap Checklist */}
         <div className="lg:col-span-2 space-y-6">
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Target className="w-4 h-4 text-blue-600" /> Career Preparation Milestones
-              </CardTitle>
-              <CardDescription>
-                Check off benchmarks as you complete coursework, projects, certifications, and interviews
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          {/* Timeline Milestone Layout */}
+          <section className="bg-white rounded-[24px] border border-slate-200/60 p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Preparation Timeline</h3>
+            <div className="relative border-l-2 border-slate-100 ml-3 space-y-6">
               {milestones.map((m) => (
-                <div
-                  key={m.id}
-                  onClick={() => toggleMilestone(m.id)}
-                  className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                    m.completed
-                      ? 'bg-emerald-50/40 border-emerald-200 text-slate-900'
-                      : 'bg-white border-slate-200 hover:border-blue-300 text-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center border shrink-0 transition-colors ${
-                        m.completed
-                          ? 'bg-emerald-600 border-emerald-600 text-white'
-                          : 'border-slate-300 bg-white'
-                      }`}
-                    >
-                      {m.completed && <CheckCircle2 className="w-4 h-4" />}
-                    </div>
-                    <span className={`text-sm font-semibold ${m.completed ? 'line-through text-slate-500' : ''}`}>
-                      {m.title}
-                    </span>
+                <div key={m.id} className="relative pl-6">
+                  {/* Timeline Node */}
+                  <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 bg-white transition-colors cursor-pointer ${
+                    m.completed ? 'border-emerald-500' : 'border-slate-300'
+                  }`} onClick={() => toggleMilestone(m.id)}>
+                    {m.completed && <div className="absolute inset-0.5 rounded-full bg-emerald-500" />}
                   </div>
-
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
-                    m.completed ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
-                  }`}>
-                    {m.completed ? 'Achieved' : 'In Progress'}
-                  </span>
+                  
+                  <div 
+                    onClick={() => toggleMilestone(m.id)}
+                    className="group cursor-pointer"
+                  >
+                    <h4 className={`text-sm font-semibold transition-colors ${
+                      m.completed ? 'text-slate-400 line-through' : 'text-slate-900 group-hover:text-indigo-600'
+                    }`}>
+                      {m.title}
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {m.completed ? 'Milestone achieved' : 'Click to mark as complete'}
+                    </p>
+                  </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {/* Recommended Learning Path for Target Role */}
           <Card>
@@ -306,14 +277,9 @@ export default function StudentCareerPage() {
         {/* Right Column: Career Target Editor */}
         <div className="space-y-6">
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-indigo-600" /> Edit Career Aspirations
-              </CardTitle>
-              <CardDescription>Update your target role and recruitment preferences</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <section className="bg-white rounded-[24px] border border-slate-200/60 p-6 md:p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Target Profile</h3>
+            <div className="space-y-5">
               <Input
                 label="Target Job Title"
                 value={careerGoalTitle}
@@ -336,9 +302,9 @@ export default function StudentCareerPage() {
               />
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Internship Status</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Internship Status</label>
                 <select
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-900 appearance-none transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent border-slate-300 hover:border-slate-400 cursor-pointer"
                   value={internshipStatus}
                   onChange={(e) => setInternshipStatus(e.target.value)}
                 >
@@ -351,9 +317,9 @@ export default function StudentCareerPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Placement Drive Readiness</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">Placement Readiness</label>
                 <select
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-900 appearance-none transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent border-slate-300 hover:border-slate-400 cursor-pointer"
                   value={placementStatus}
                   onChange={(e) => setPlacementStatus(e.target.value)}
                 >
@@ -365,18 +331,18 @@ export default function StudentCareerPage() {
                 </select>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-4 border-t border-slate-100">
                 <Button
                   variant="primary"
                   className="w-full"
                   isLoading={isSaving}
                   onClick={handleSave}
                 >
-                  <Save className="w-4 h-4 mr-1.5" /> Save Career Targets
+                  Save Targets
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
         </div>
 

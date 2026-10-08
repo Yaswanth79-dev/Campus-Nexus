@@ -45,7 +45,7 @@ export function Header({ onOpenMobileNav, title }: HeaderProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200 bg-white/90 px-4 sm:px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-[72px] w-full items-center justify-between bg-transparent px-4 sm:px-8">
       {/* Left side: Mobile Toggle & Page Title */}
       <div className="flex items-center gap-3">
         <button
@@ -57,7 +57,7 @@ export function Header({ onOpenMobileNav, title }: HeaderProps) {
         </button>
 
         {title && (
-          <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 truncate">
+          <h1 className="text-[15px] font-semibold tracking-tight text-slate-900 truncate">
             {title}
           </h1>
         )}
@@ -84,7 +84,7 @@ export function Header({ onOpenMobileNav, title }: HeaderProps) {
               {unreadCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
                 </span>
               )}
             </button>
@@ -108,7 +108,7 @@ export function Header({ onOpenMobileNav, title }: HeaderProps) {
                   <span className="text-xs font-medium text-slate-800 leading-tight">
                     {n.title}
                   </span>
-                  {n.unread && <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0 mt-1" />}
+                  {n.unread && <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 shrink-0 mt-1" />}
                 </div>
                 <span className="text-[11px] text-slate-400 mt-1 block">{n.time}</span>
               </div>

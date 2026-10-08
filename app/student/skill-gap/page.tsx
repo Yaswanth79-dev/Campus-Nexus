@@ -5,171 +5,164 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
-import { PageHeader } from '@/components/layout/page-header';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Target,
   CheckCircle2,
-  AlertCircle,
   ArrowRight,
   Sparkles,
-  BookOpen,
-  Cpu,
+  Cloud,
   Brain,
   Shield,
-  Cloud,
   Database,
-  Smartphone,
+  Briefcase
 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-interface CareerBenchmark {
-  role: string;
-  icon: any;
-  description: string;
-  requiredSkills: { name: string; category: string; importance: 'Essential' | 'Recommended' }[];
-}
+const ICON_MAP: Record<string, React.ElementType> = {
+  'Cloud': Cloud,
+  'Brain': Brain,
+  'Shield': Shield,
+  'Database': Database,
+};
 
-const CAREER_TRACKS: CareerBenchmark[] = [
-  {
-    role: 'Full-Stack Cloud Engineer',
-    icon: Cloud,
-    description: 'Design and deploy modern distributed web applications with Next.js, microservices, and serverless cloud architectures.',
-    requiredSkills: [
-      { name: 'TypeScript', category: 'Programming Languages', importance: 'Essential' },
-      { name: 'Next.js & React', category: 'Web Development', importance: 'Essential' },
-      { name: 'PostgreSQL', category: 'Database', importance: 'Essential' },
-      { name: 'Cloud Architecture (AWS/GCP)', category: 'Cloud & DevOps', importance: 'Essential' },
-      { name: 'Docker & Containers', category: 'Cloud & DevOps', importance: 'Essential' },
-      { name: 'REST & GraphQL APIs', category: 'Web Development', importance: 'Recommended' },
-      { name: 'CI/CD Pipelines', category: 'Cloud & DevOps', importance: 'Recommended' },
-      { name: 'Redis / Caching', category: 'Database', importance: 'Recommended' },
-    ],
-  },
-  {
-    role: 'AI / Machine Learning Engineer',
-    icon: Brain,
-    description: 'Build predictive models, natural language processing pipelines, and neural networks using modern AI frameworks.',
-    requiredSkills: [
-      { name: 'Python', category: 'Programming Languages', importance: 'Essential' },
-      { name: 'Data Structures & Algorithms', category: 'Computer Science', importance: 'Essential' },
-      { name: 'PyTorch / TensorFlow', category: 'AI / ML', importance: 'Essential' },
-      { name: 'Data Science & Pandas', category: 'Data Science', importance: 'Essential' },
-      { name: 'Mathematics & Linear Algebra', category: 'Data Science', importance: 'Essential' },
-      { name: 'Model Deployment (FastAPI/Docker)', category: 'Cloud & DevOps', importance: 'Recommended' },
-      { name: 'Vector Databases', category: 'Database', importance: 'Recommended' },
-      { name: 'LLM Prompt Engineering', category: 'AI / ML', importance: 'Recommended' },
-    ],
-  },
-  {
-    role: 'Cybersecurity & Defense Specialist',
-    icon: Shield,
-    description: 'Secure enterprise networks, perform ethical penetration testing, and analyze digital vulnerabilities.',
-    requiredSkills: [
-      { name: 'Network Security & TCP/IP', category: 'Cybersecurity', importance: 'Essential' },
-      { name: 'Linux System Administration', category: 'Operating Systems', importance: 'Essential' },
-      { name: 'Python / Bash Scripting', category: 'Programming Languages', importance: 'Essential' },
-      { name: 'Vulnerability Assessment', category: 'Cybersecurity', importance: 'Essential' },
-      { name: 'Cryptography & PKI', category: 'Cybersecurity', importance: 'Recommended' },
-      { name: 'Web Application Security (OWASP)', category: 'Cybersecurity', importance: 'Recommended' },
-    ],
-  },
-  {
-    role: 'Data Engineer & Analytics Architect',
-    icon: Database,
-    description: 'Architect big data streaming pipelines, data warehouses, and automated ETL transformation systems.',
-    requiredSkills: [
-      { name: 'SQL & Database Optimization', category: 'Database', importance: 'Essential' },
-      { name: 'Python', category: 'Programming Languages', importance: 'Essential' },
-      { name: 'Apache Spark / Distributed Data', category: 'Data Science', importance: 'Essential' },
-      { name: 'Data Warehousing (Snowflake/BigQuery)', category: 'Database', importance: 'Essential' },
-      { name: 'ETL Pipeline Design', category: 'Data Science', importance: 'Recommended' },
-      { name: 'Kafka / Realtime Streaming', category: 'Cloud & DevOps', importance: 'Recommended' },
-    ],
-  },
-];
+type TrackSkill = Tables<'career_track_skills'>;
+type CareerTrack = Tables<'career_tracks'> & { career_track_skills: TrackSkill[] };
 
 export default function StudentSkillGapPage() {
   const { user } = useAuth();
   const [userSkills, setUserSkills] = useState<string[]>([]);
+  const [careerTracks, setCareerTracks] = useState<CareerTrack[]>([]);
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadSkills() {
+    async function loadData() {
       if (!user) return;
       try {
         const supabase = getSupabaseBrowserClient();
-        const { data } = await supabase
+        
+        // Load User Skills
+        const { data: skillsData, error: skillsError } = await supabase
           .from('student_skills')
           .select('*')
           .eq('student_id', user.id);
 
-        if (data) {
-          const list = data as Tables<'student_skills'>[];
+        if (skillsError) throw skillsError;
+        if (skillsData) {
+          const list = skillsData as Tables<'student_skills'>[];
           setUserSkills(list.map((s) => s.skill_name.toLowerCase()));
         }
-      } catch (err) {
-        console.error('Error fetching user skills:', err);
+
+        // Load Career Tracks
+        const { data: tracksData, error: tracksError } = await supabase
+          .from('career_tracks')
+          .select(`
+            *,
+            career_track_skills (*)
+          `)
+          .eq('is_active', true)
+          .order('name');
+
+        if (tracksError) throw tracksError;
+        if (tracksData) {
+          setCareerTracks(tracksData as CareerTrack[]);
+        }
+      } catch (err: any) {
+        console.error('Error fetching data:', err);
+        setError(err.message || 'Failed to load skill gap data.');
       } finally {
         setIsLoading(false);
       }
     }
-    loadSkills();
+    loadData();
   }, [user]);
 
-  const activeTrack = CAREER_TRACKS[selectedTrackIndex];
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <p className="text-slate-500 font-medium">Analyzing skill benchmarks...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="p-4 bg-red-50 text-red-600 rounded-xl border border-red-200">
+          <h3 className="font-bold">Error Loading Benchmarks</h3>
+          <p className="text-sm mt-1">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (careerTracks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="p-8 text-center bg-slate-50 rounded-xl border border-slate-200 max-w-md">
+          <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+          <h3 className="font-bold text-slate-700">No Career Tracks Available</h3>
+          <p className="text-sm text-slate-500 mt-2">Check back later as new industry benchmarks are added to the platform.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const activeTrack = careerTracks[selectedTrackIndex];
 
   // Calculate Match & Missing Skills
-  const matchEvaluation = activeTrack.requiredSkills.map((req) => {
-    const hasSkill = userSkills.some((s) => s.includes(req.name.toLowerCase()) || req.name.toLowerCase().includes(s));
+  const matchEvaluation = activeTrack.career_track_skills.map((req) => {
+    const hasSkill = userSkills.some((s) => s.includes(req.skill_name.toLowerCase()) || req.skill_name.toLowerCase().includes(s));
     return { ...req, hasSkill };
   });
 
   const acquiredCount = matchEvaluation.filter((m) => m.hasSkill).length;
-  const matchPercentage = Math.round((acquiredCount / activeTrack.requiredSkills.length) * 100);
+  const totalSkills = activeTrack.career_track_skills.length;
+  const matchPercentage = totalSkills > 0 ? Math.round((acquiredCount / totalSkills) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Skill Gap Analyzer & Industry Benchmark"
-        description="Compare your current verified skills against industry benchmarks for high-demand tech roles to find improvement areas."
-        breadcrumbs={[
-          { label: 'Student Portal', href: '/student/dashboard' },
-          { label: 'Skill Gap' },
-        ]}
-      />
+      {/* Editorial Header */}
+      <div className="pt-4 pb-8 mb-4 border-b border-slate-200/60">
+        <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+          Intelligence & Benchmarks
+        </h1>
+        <p className="text-base text-slate-500 mt-2 max-w-2xl leading-relaxed">
+          Compare your current verified skills against industry benchmarks for high-demand tech roles.
+        </p>
+      </div>
 
       {/* Role Track Selector Tabs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {CAREER_TRACKS.map((track, idx) => {
-          const Icon = track.icon;
+        {careerTracks.map((track, idx) => {
+          const Icon = track.icon_name && ICON_MAP[track.icon_name] ? ICON_MAP[track.icon_name] : Briefcase;
           const isSelected = selectedTrackIndex === idx;
 
           return (
-            <div
-              key={track.role}
-              onClick={() => setSelectedTrackIndex(idx)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
-                isSelected
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-[1.02]'
-                  : 'bg-white border-slate-200 hover:border-blue-300 text-slate-800'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-lg ${isSelected ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'}`}>
-                  <Icon className="w-5 h-5" />
+              <div
+                key={track.id}
+                onClick={() => setSelectedTrackIndex(idx)}
+                className={`p-5 rounded-[20px] border transition-all cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-white border-slate-200/60 hover:border-slate-300 text-slate-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2.5 rounded-xl ${isSelected ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-500'}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-sm leading-tight">{track.name}</h3>
                 </div>
-                <h3 className="font-bold text-sm leading-tight">{track.role}</h3>
+                <div className="mt-4 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider">
+                  <span className={isSelected ? 'text-slate-400' : 'text-slate-500'}>Benchmark</span>
+                  <span className={isSelected ? 'text-white' : 'text-slate-900'}>
+                    {track.career_track_skills.length} Skills
+                  </span>
+                </div>
               </div>
-              <div className="mt-3 flex items-center justify-between text-xs font-semibold">
-                <span className={isSelected ? 'text-blue-100' : 'text-slate-500'}>Benchmark</span>
-                <span className={isSelected ? 'text-white' : 'text-blue-600'}>
-                  {track.requiredSkills.length} Skills
-                </span>
-              </div>
-            </div>
           );
         })}
       </div>
@@ -181,122 +174,123 @@ export default function StudentSkillGapPage() {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Match Score Meter */}
-          <Card className="p-6 bg-white border-slate-200">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          {/* Match Score Meter */}
+          <section className="p-6 md:p-8 rounded-[24px] bg-white border border-slate-200/60 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div>
-                <span className="text-xs uppercase font-bold tracking-wider text-slate-400">Track Compatibility</span>
-                <h2 className="text-xl font-bold text-slate-900 mt-0.5">{activeTrack.role}</h2>
-                <p className="text-xs text-slate-500 mt-1 max-w-lg">{activeTrack.description}</p>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1 block">Track Compatibility</span>
+                <h2 className="text-2xl font-extrabold text-slate-900">{activeTrack.name}</h2>
+                <p className="text-sm text-slate-500 mt-2 max-w-lg leading-relaxed">{activeTrack.description}</p>
               </div>
 
-              <div className="text-right">
-                <div className="text-3xl font-black text-blue-600">{matchPercentage}%</div>
-                <div className="text-xs font-semibold text-slate-500">Benchmark Match</div>
+              <div className="text-left sm:text-right">
+                <div className="text-4xl md:text-5xl font-black text-indigo-600 tracking-tighter">{matchPercentage}%</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Match</div>
               </div>
             </div>
 
-            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden mt-4">
+            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-6">
               <div
-                className={`h-3 rounded-full transition-all duration-500 ${
-                  matchPercentage >= 70 ? 'bg-emerald-500' : matchPercentage >= 40 ? 'bg-blue-600' : 'bg-amber-500'
+                className={`h-2 rounded-full transition-all duration-700 ease-out ${
+                  matchPercentage >= 70 ? 'bg-emerald-500' : matchPercentage >= 40 ? 'bg-indigo-600' : 'bg-amber-500'
                 }`}
                 style={{ width: `${matchPercentage}%` }}
               />
             </div>
 
-            <div className="flex justify-between text-xs text-slate-500 font-medium mt-2">
-              <span>{acquiredCount} of {activeTrack.requiredSkills.length} skills verified</span>
-              <span>{matchPercentage >= 70 ? '🟢 Strong Alignment' : '🟡 Recommended Learning Needed'}</span>
+            <div className="flex justify-between text-xs text-slate-500 font-semibold mt-3">
+              <span>{acquiredCount} of {totalSkills} skills verified</span>
+              <span className={matchPercentage >= 70 ? 'text-emerald-600' : 'text-slate-500'}>
+                {matchPercentage >= 70 ? 'Strong Alignment' : 'Learning Recommended'}
+              </span>
             </div>
-          </Card>
+          </section>
 
           {/* Required Skills Matrix */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Target className="w-4 h-4 text-blue-600" /> Required Technical Competencies
-              </CardTitle>
-              <CardDescription>Comparison against your recorded technical portfolio</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {matchEvaluation.map((skill, idx) => (
+          {/* Required Skills Matrix */}
+          <section className="p-6 md:p-8 rounded-[24px] bg-white border border-slate-200/60 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-slate-900">Technical Competencies</h3>
+              <p className="text-sm text-slate-500 mt-1">Comparison against your recorded technical portfolio</p>
+            </div>
+            
+            <div className="space-y-3">
+              {matchEvaluation.map((skill) => (
                 <div
-                  key={idx}
-                  className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 ${
+                  key={skill.id}
+                  className={`p-4 rounded-[16px] border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
                     skill.hasSkill
-                      ? 'bg-emerald-50/40 border-emerald-200 text-slate-900'
-                      : 'bg-slate-50 border-slate-200 text-slate-700'
+                      ? 'bg-emerald-50/30 border-emerald-100/60 hover:border-emerald-200 text-slate-900'
+                      : 'bg-slate-50 border-slate-200/60 hover:border-slate-300/80 text-slate-700'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                      skill.hasSkill ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-400'
+                  <div className="flex items-center gap-3.5">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${
+                      skill.hasSkill ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white border-slate-300 text-slate-300'
                     }`}>
-                      {skill.hasSkill ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="text-[10px]">✕</span>}
+                      {skill.hasSkill ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-slate-900">{skill.name}</div>
-                      <div className="text-[11px] text-slate-500">{skill.category}</div>
+                      <div className="text-sm font-bold text-slate-900">{skill.skill_name}</div>
+                      <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">{skill.category}</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                      skill.importance === 'Essential' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
+                  <div className="flex items-center gap-3">
+                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md ${
+                      skill.target_level === 'Essential' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
                     }`}>
-                      {skill.importance}
-                    </span>
-                    <span className={`text-xs font-semibold ${
-                      skill.hasSkill ? 'text-emerald-700' : 'text-slate-400'
-                    }`}>
-                      {skill.hasSkill ? 'Acquired' : 'Gap'}
+                      {skill.target_level}
                     </span>
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
         </div>
 
         {/* Right Column: Recommended Action Track */}
         <div className="space-y-6">
 
-          <Card className="border-indigo-200 bg-linear-to-b from-indigo-50/50 to-white">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2 text-indigo-950">
-                <Sparkles className="w-4 h-4 text-indigo-600" /> Bridge the Gap
-              </CardTitle>
-              <CardDescription>Recommended actions to reach 100% industry readiness</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2.5">
-                <div className="p-3 rounded-lg bg-white border border-indigo-100 text-xs space-y-1">
-                  <div className="font-bold text-slate-900">1. Complete Learning Hub Tests</div>
-                  <p className="text-slate-600">Take assessment tests for missing skills to earn credits and prove proficiency.</p>
-                  <Link href="/student/learning" className="text-blue-600 font-semibold inline-flex items-center gap-1 mt-1 hover:underline">
+          <section className="p-6 md:p-8 rounded-[24px] bg-slate-900 text-white shadow-md relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-6 opacity-10">
+              <Sparkles className="w-24 h-24 text-white" />
+            </div>
+            
+            <div className="relative z-10">
+              <div className="mb-6">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-300 block mb-1">Bridge the Gap</span>
+                <h3 className="text-xl font-extrabold text-white">Recommended Actions</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="p-4 rounded-[16px] bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                  <div className="font-bold text-sm text-white">Complete Learning Hub Tests</div>
+                  <p className="text-xs text-indigo-200 mt-1 mb-3">Take assessment tests for missing skills to earn credits and prove proficiency.</p>
+                  <Link href="/student/learning" className="text-xs font-bold text-indigo-300 uppercase tracking-widest inline-flex items-center gap-1 hover:text-white transition-colors">
                     Go to Learning Hub <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
 
-                <div className="p-3 rounded-lg bg-white border border-indigo-100 text-xs space-y-1">
-                  <div className="font-bold text-slate-900">2. Build a Capstone Project</div>
-                  <p className="text-slate-600">Apply the required tech stack in a project repository and request faculty review.</p>
-                  <Link href="/student/projects" className="text-blue-600 font-semibold inline-flex items-center gap-1 mt-1 hover:underline">
+                <div className="p-4 rounded-[16px] bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                  <div className="font-bold text-sm text-white">Build a Capstone Project</div>
+                  <p className="text-xs text-indigo-200 mt-1 mb-3">Apply the required tech stack in a project repository and request faculty review.</p>
+                  <Link href="/student/projects" className="text-xs font-bold text-indigo-300 uppercase tracking-widest inline-flex items-center gap-1 hover:text-white transition-colors">
                     Add Project <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
 
-                <div className="p-3 rounded-lg bg-white border border-indigo-100 text-xs space-y-1">
-                  <div className="font-bold text-slate-900">3. Earn Industry Certification</div>
-                  <p className="text-slate-600">Target cloud credentials (AWS / GCP / Azure) to certify domain knowledge.</p>
-                  <Link href="/student/certifications" className="text-blue-600 font-semibold inline-flex items-center gap-1 mt-1 hover:underline">
+                <div className="p-4 rounded-[16px] bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                  <div className="font-bold text-sm text-white">Earn Industry Certification</div>
+                  <p className="text-xs text-indigo-200 mt-1 mb-3">Target cloud credentials to certify domain knowledge.</p>
+                  <Link href="/student/certifications" className="text-xs font-bold text-indigo-300 uppercase tracking-widest inline-flex items-center gap-1 hover:text-white transition-colors">
                     Add Certifications <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
         </div>
 

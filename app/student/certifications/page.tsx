@@ -5,8 +5,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
-import { PageHeader } from '@/components/layout/page-header';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -136,43 +134,51 @@ export default function StudentCertificationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Industry Certifications & Credentials"
-        description="Verify and showcase professional credentials from AWS, Google Cloud, Microsoft, Cisco, Meta, and Coursera."
-        breadcrumbs={[
-          { label: 'Student Portal', href: '/student/dashboard' },
-          { label: 'Certifications' },
-        ]}
-        actions={
-          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+      {/* Premium Editorial Hero */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pt-4 pb-8 mb-4 border-b border-slate-200/60">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1 block">Student Portal • Credentials</span>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+            Industry Certifications
+          </h1>
+          <p className="text-base text-slate-500 mt-2 max-w-2xl leading-relaxed">
+            Verify and showcase professional credentials from AWS, Google Cloud, Microsoft, Cisco, Meta, and Coursera.
+          </p>
+        </div>
+        <div className="w-full md:w-auto">
+          <Button variant="primary" size="md" className="w-full bg-slate-900 hover:bg-slate-800 text-white" onClick={() => setIsModalOpen(true)}>
             <Plus className="w-4 h-4 mr-1.5" /> Add Certification
           </Button>
-        }
-      />
+        </div>
+      </div>
 
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Credentials</div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{certifications.length}</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">Verified certificates</div>
-        </Card>
+      {/* KPI Typographic Blocks */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 py-6 mb-4">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Total Credentials</span>
+          <div className="text-4xl font-black text-slate-900 tracking-tighter">{certifications.length}</div>
+          <div className="text-[11px] text-slate-500 font-semibold mt-1">Verified certificates</div>
+        </div>
 
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5" /> Verified Status
+        <div className="sm:border-l border-slate-200/60 sm:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5 flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Verified Status
+          </span>
+          <div className="text-4xl font-black text-emerald-600 tracking-tighter">
+            100%
           </div>
-          <div className="text-2xl font-black text-emerald-900 mt-1">100%</div>
-          <div className="text-[11px] text-emerald-600 mt-0.5">Authenticated credentials</div>
-        </Card>
+          <div className="text-[11px] text-emerald-600 font-bold mt-1">Authenticated credentials</div>
+        </div>
 
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Resume Sync
+        <div className="sm:border-l border-slate-200/60 sm:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" /> Resume Sync
+          </span>
+          <div className="text-xl font-black text-blue-600 tracking-tighter leading-none mt-1">
+            Enabled
           </div>
-          <div className="text-sm font-bold text-blue-900 mt-1.5">Enabled for Placement Drives</div>
-          <div className="text-[11px] text-blue-600 mt-0.5">Attached to student profile</div>
-        </Card>
+          <div className="text-[11px] text-blue-600 font-bold mt-2">Attached to student profile</div>
+        </div>
       </div>
 
       {/* Certifications Grid */}
@@ -191,90 +197,85 @@ export default function StudentCertificationsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {certifications.map((cert) => (
-            <Card
+            <div
               key={cert.id}
-              className="bg-white border-slate-200 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
+              className="bg-white rounded-[24px] border border-slate-200/60 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between overflow-hidden hover:border-slate-300 transition-all"
             >
               <div className="p-6 space-y-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 shrink-0">
+                  <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 shrink-0">
                     <FileCheck className="w-6 h-6" />
                   </div>
                   <Badge variant="success" size="sm" dot>Verified</Badge>
                 </div>
 
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 leading-snug">{cert.name}</h3>
-                  <p className="text-xs font-semibold text-slate-600 mt-1 flex items-center gap-1.5">
+                  <h3 className="text-lg font-black text-slate-900 leading-snug tracking-tight">{cert.name}</h3>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-2 flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5 text-slate-400" /> {cert.issuing_organization}
                   </p>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50/50 p-4 rounded-[16px] border border-slate-100">
                   {cert.issue_date && (
-                    <div className="flex items-center gap-1.5">
+                    <div className="col-span-2 flex items-center gap-1.5 pb-2 border-b border-slate-100/60">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       <span>Issued: {new Date(cert.issue_date).toLocaleDateString()}</span>
                     </div>
                   )}
                   {cert.credential_id && (
-                    <div className="text-[11px] text-slate-400 truncate">
-                      ID: <span className="font-mono text-slate-600">{cert.credential_id}</span>
+                    <div className="col-span-2 pt-1 truncate">
+                      ID: <span className="text-slate-900 ml-1">{cert.credential_id}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+              <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
                 {cert.credential_url ? (
                   <a
                     href={cert.credential_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-indigo-600 hover:text-indigo-700 transition-colors"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" /> View Certificate
+                    <ExternalLink className="w-4 h-4" /> View Credential
                   </a>
                 ) : (
-                  <span className="text-xs text-slate-400">No URL provided</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">No URL provided</span>
                 )}
 
                 <button
                   onClick={() => handleDeleteCert(cert.id, cert.name)}
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                   title="Delete Certificate"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}
 
       {/* Add Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <Card className="w-full max-w-md bg-white shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-                  <FileCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-base">Add Certification</h3>
-                  <p className="text-xs text-slate-500">Record a professional industry credential</p>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-white rounded-[24px] shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+              <div>
+                <h3 className="text-xl font-black text-slate-900">Add Certification</h3>
+                <p className="text-xs text-slate-500 mt-1">Record a professional industry credential</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg leading-none p-1"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleAddCert} className="space-y-4">
+            <form onSubmit={handleAddCert} className="space-y-5">
               <Input
                 label="Certification Name"
                 required
@@ -287,7 +288,7 @@ export default function StudentCertificationsPage() {
               <Input
                 label="Issuing Organization"
                 required
-                placeholder="e.g. Amazon Web Services / Coursera / Microsoft"
+                placeholder="e.g. Amazon Web Services / Microsoft"
                 value={issuingOrg}
                 onChange={(e) => setIssuingOrg(e.target.value)}
               />
@@ -300,7 +301,7 @@ export default function StudentCertificationsPage() {
                   onChange={(e) => setIssueDate(e.target.value)}
                 />
                 <Input
-                  label="Expiry Date (Optional)"
+                  label="Expiry Date"
                   type="date"
                   value={expiryDate}
                   onChange={(e) => setExpiryDate(e.target.value)}
@@ -315,13 +316,13 @@ export default function StudentCertificationsPage() {
               />
 
               <Input
-                label="Credential URL / Verification Link"
+                label="Verification Link (Optional)"
                 placeholder="https://www.credly.com/badges/..."
                 value={credentialUrl}
                 onChange={(e) => setCredentialUrl(e.target.value)}
               />
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-4 flex gap-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -333,7 +334,7 @@ export default function StudentCertificationsPage() {
                 <Button
                   type="submit"
                   variant="primary"
-                  className="flex-1"
+                  className="flex-1 bg-slate-900 hover:bg-slate-800 text-white"
                   isLoading={isSubmitting}
                   disabled={!name.trim() || !issuingOrg.trim()}
                 >
@@ -341,7 +342,7 @@ export default function StudentCertificationsPage() {
                 </Button>
               </div>
             </form>
-          </Card>
+          </div>
         </div>
       )}
     </div>

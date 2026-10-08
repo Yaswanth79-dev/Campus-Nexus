@@ -5,11 +5,8 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
-import { StatCard } from '@/components/ui/stat-card';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar } from '@/components/ui/avatar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import {
   Users,
@@ -97,84 +94,59 @@ export default function FacultyDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Welcome Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-linear-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-2xl p-6 text-white shadow-md relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="text-xs uppercase font-bold tracking-wider text-indigo-300">
-              Campus Nexus • Faculty Mentoring Portal
-            </span>
-            <Badge variant="faculty" size="sm">
-              {user?.department || 'IT'} Department
-            </Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+      {/* Premium Editorial Hero */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pt-4 pb-8 mb-4 border-b border-slate-200/60">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1 block">Campus Nexus • {user?.department || 'IT'} Department</span>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
             Welcome, Professor {user?.fullName || 'Faculty'}
           </h1>
-          <p className="text-xs sm:text-sm text-indigo-200 mt-1">
+          <p className="text-base text-slate-500 mt-2 max-w-2xl leading-relaxed">
             {user?.designation || 'Assistant Professor'} • {user?.specialization || 'Distributed Systems & Cloud'}
           </p>
         </div>
 
-        <div className="relative z-10 flex items-center gap-3">
-          <Link href="/faculty/mentoring">
-            <Button variant="primary" size="md" className="shadow-md">
-              <Calendar className="w-4 h-4 mr-1.5" /> Schedule Mentoring
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Link href="/faculty/announcements" className="flex-1 md:flex-none">
+            <Button variant="outline" size="md" className="w-full">
+              Announcements
             </Button>
           </Link>
-          <Link href="/faculty/announcements">
-            <Button variant="outline" size="md" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-              <Megaphone className="w-4 h-4 mr-1.5" /> Announcement
+          <Link href="/faculty/mentoring" className="flex-1 md:flex-none">
+            <Button variant="primary" size="md" className="w-full">
+              <Calendar className="w-4 h-4 mr-1.5" /> Schedule Session
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          id="stat-students"
-          title="Department Students"
-          value={studentsCount.toString()}
-          subtext={`${user?.department || 'IT'} Enrolled Students`}
-          change={{ value: 'Dept Scope', trend: 'neutral' }}
-          icon="students"
-          variant="indigo"
-          href="/faculty/students"
-        />
+      {/* KPI Typographic Blocks */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 py-6 mb-4">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Department Students</span>
+          <div className="text-4xl font-black text-slate-900 tracking-tighter">{studentsCount}</div>
+          <div className="text-[11px] text-slate-500 font-semibold mt-1">Enrolled in {user?.department || 'IT'}</div>
+        </div>
 
-        <StatCard
-          id="stat-mentees"
-          title="Assigned Mentees"
-          value={menteesCount.toString()}
-          subtext="Under active faculty guidance"
-          change={{ value: 'Mentorship Group', trend: 'up' }}
-          icon="mentoring"
-          variant="blue"
-          href="/faculty/mentoring"
-        />
+        <div className="lg:border-l border-slate-200/60 lg:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Assigned Mentees</span>
+          <div className="text-4xl font-black text-slate-900 tracking-tighter">{menteesCount}</div>
+          <div className="text-[11px] text-indigo-600 font-bold mt-1">Mentorship Group</div>
+        </div>
 
-        <StatCard
-          id="stat-concerns"
-          title="Student Concerns"
-          value={pendingConcerns.toString()}
-          subtext="Pending redressal reviews"
-          change={{ value: pendingConcerns > 0 ? 'Requires Action' : 'All Clear', trend: pendingConcerns > 0 ? 'down' : 'up' }}
-          icon="feedback"
-          variant="rose"
-          href="/faculty/concerns"
-        />
+        <div className="lg:border-l border-slate-200/60 lg:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Student Concerns</span>
+          <div className="text-4xl font-black text-slate-900 tracking-tighter">{pendingConcerns}</div>
+          <div className={`text-[11px] font-bold mt-1 ${pendingConcerns > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+            {pendingConcerns > 0 ? 'Requires Action' : 'All Clear'}
+          </div>
+        </div>
 
-        <StatCard
-          id="stat-ideas"
-          title="Innovation Pitches"
-          value={pendingIdeas.toString()}
-          subtext="Student capstone ideas"
-          change={{ value: 'Review Queue', trend: 'neutral' }}
-          icon="innovation"
-          variant="amber"
-          href="/faculty/innovation"
-        />
+        <div className="lg:border-l border-slate-200/60 lg:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Innovation Pitches</span>
+          <div className="text-4xl font-black text-slate-900 tracking-tighter">{pendingIdeas}</div>
+          <div className="text-[11px] text-slate-500 font-semibold mt-1">Review Queue</div>
+        </div>
       </div>
 
       {/* Main Grid Content */}
@@ -183,95 +155,99 @@ export default function FacultyDashboardPage() {
         {/* Left 2 Columns: Mentoring Sessions & Student Concerns */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Mentoring Sessions Card */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+          {/* Mentoring Sessions */}
+          <section className="bg-white rounded-[24px] border border-slate-200/60 p-6 md:p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex flex-row items-center justify-between mb-6">
               <div>
-                <CardTitle className="text-base">Upcoming Mentoring Sessions</CardTitle>
-                <CardDescription>One-on-one academic and technical milestone reviews</CardDescription>
+                <h3 className="text-lg font-bold text-slate-900">Upcoming Mentoring Sessions</h3>
+                <p className="text-sm text-slate-500 mt-1">One-on-one academic and technical milestone reviews</p>
               </div>
               <Link
                 href="/faculty/mentoring"
-                className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1"
+                className="text-xs text-indigo-600 hover:text-indigo-700 font-bold uppercase tracking-wider flex items-center gap-1 transition-colors"
               >
                 View All <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </CardHeader>
-            <CardContent className="space-y-3">
+            </div>
+            
+            <div className="space-y-4">
               {recentSessions.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400">
+                <div className="py-12 text-center text-sm text-slate-500 border border-dashed border-slate-300 rounded-[16px]">
                   No upcoming mentoring sessions scheduled.
                 </div>
               ) : (
                 recentSessions.map((session) => (
                   <div
                     key={session.id}
-                    className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-4"
+                    className="p-5 rounded-[16px] bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:border-slate-200"
                   >
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-slate-900">{session.topic}</span>
-                        <Badge variant={session.status === 'Completed' ? 'success' : 'blue'} size="sm">
+                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                          session.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'
+                        }`}>
                           {session.status}
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-xs text-slate-500 flex items-center gap-2">
-                        <span>Mode: <strong>{session.meeting_mode}</strong></span>
-                        <span>•</span>
+                      <p className="text-xs font-medium text-slate-500 flex items-center gap-2">
+                        <span>Mode: <strong className="text-slate-700">{session.meeting_mode}</strong></span>
+                        <span className="text-slate-300">•</span>
                         <span>{new Date(session.session_date).toLocaleString()}</span>
                       </p>
                     </div>
 
                     <Link href="/faculty/mentoring">
-                      <Button variant="outline" size="sm">Review Notes</Button>
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto">Review Notes</Button>
                     </Link>
                   </div>
                 ))
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {/* Student Concerns & Grievances */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <section className="bg-white rounded-[24px] border border-slate-200/60 p-6 md:p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex flex-row items-center justify-between mb-6">
               <div>
-                <CardTitle className="text-base">Recent Student Concerns</CardTitle>
-                <CardDescription>Academic and mentoring queries needing faculty resolution</CardDescription>
+                <h3 className="text-lg font-bold text-slate-900">Recent Student Concerns</h3>
+                <p className="text-sm text-slate-500 mt-1">Academic and mentoring queries needing faculty resolution</p>
               </div>
               <Link
                 href="/faculty/concerns"
-                className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1"
+                className="text-xs text-indigo-600 hover:text-indigo-700 font-bold uppercase tracking-wider flex items-center gap-1 transition-colors"
               >
                 View All ({pendingConcerns}) <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </CardHeader>
-            <CardContent className="space-y-3">
+            </div>
+            
+            <div className="space-y-4">
               {recentConcerns.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400">
+                <div className="py-12 text-center text-sm text-slate-500 border border-dashed border-slate-300 rounded-[16px]">
                   No pending student grievances.
                 </div>
               ) : (
                 recentConcerns.map((concern) => (
                   <div
                     key={concern.id}
-                    className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-4"
+                    className="p-5 rounded-[16px] bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:border-slate-200"
                   >
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
-                        <Badge variant="default" size="sm">{concern.category}</Badge>
+                        <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">{concern.category}</span>
                         <span className="font-bold text-sm text-slate-900">{concern.title}</span>
                       </div>
-                      <p className="text-xs text-slate-600 line-clamp-1">{concern.description}</p>
+                      <p className="text-xs font-medium text-slate-600 line-clamp-1">{concern.description}</p>
                     </div>
 
                     <Link href="/faculty/concerns">
-                      <Button variant="primary" size="sm">Respond</Button>
+                      <Button variant="primary" size="sm" className="w-full sm:w-auto">Respond</Button>
                     </Link>
                   </div>
                 ))
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
         </div>
 
@@ -279,51 +255,64 @@ export default function FacultyDashboardPage() {
         <div className="space-y-6">
 
           {/* Department Intelligence Snapshot */}
-          <Card className="border-indigo-200 bg-linear-to-b from-indigo-50/40 to-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-bold text-indigo-950 uppercase tracking-wider">
+          <section className="bg-slate-900 text-white rounded-[24px] p-6 md:p-8 shadow-md relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
+              <Users className="w-32 h-32 text-white" />
+            </div>
+            
+            <div className="relative z-10">
+              <h3 className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-6">
                 Department Governance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-xs text-slate-600">
-              <div className="flex justify-between items-center py-1 border-b border-indigo-100">
-                <span className="font-semibold text-slate-700">Department Scope</span>
-                <Badge variant="student" size="sm">{user?.department || 'IT'}</Badge>
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-sm font-semibold text-slate-300">Department Scope</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/10 text-white">{user?.department || 'IT'}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-sm font-semibold text-slate-300">Head of Department</span>
+                  <span className="font-bold text-white text-sm">Dr. A. Sharma</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-sm font-semibold text-slate-300">Role Authority</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400">Verified Mentor</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center py-1 border-b border-indigo-100">
-                <span className="font-semibold text-slate-700">Head of Department (HOD)</span>
-                <span className="font-bold text-slate-900">Dr. A. Sharma</span>
-              </div>
-              <div className="flex justify-between items-center py-1">
-                <span className="font-semibold text-slate-700">Role Authority</span>
-                <span className="font-bold text-emerald-600">Verified Faculty Mentor</span>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {/* Faculty Quick Actions */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+          <section className="bg-white rounded-[24px] border border-slate-200/60 p-6 md:p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Quick Actions</h3>
+            
+            <div className="space-y-3">
               <Link href="/faculty/students" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                  <Users className="w-4 h-4 mr-2 text-indigo-600" /> Browse Department Students
-                </Button>
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200/60 hover:bg-slate-50 transition-colors">
+                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold text-slate-700">Browse Students</span>
+                </div>
               </Link>
               <Link href="/faculty/resources" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                  <GraduationCap className="w-4 h-4 mr-2 text-blue-600" /> Upload Course Notes / Syllabus
-                </Button>
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200/60 hover:bg-slate-50 transition-colors">
+                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                    <GraduationCap className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold text-slate-700">Upload Course Notes</span>
+                </div>
               </Link>
               <Link href="/faculty/opportunities" className="block">
-                <Button variant="outline" size="sm" className="w-full justify-start text-xs">
-                  <Sparkles className="w-4 h-4 mr-2 text-amber-600" /> Post Research / Internship Drive
-                </Button>
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200/60 hover:bg-slate-50 transition-colors">
+                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold text-slate-700">Post Research Drive</span>
+                </div>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
         </div>
 

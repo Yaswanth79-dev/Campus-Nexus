@@ -5,8 +5,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
-import { PageHeader } from '@/components/layout/page-header';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -170,90 +168,86 @@ export default function StudentProjectsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Projects Repository"
-        description="Showcase software projects, open-source repositories, team innovations, and receive faculty review."
-        breadcrumbs={[
-          { label: 'Student Portal', href: '/student/dashboard' },
-          { label: 'Projects' },
-        ]}
-        actions={
-          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+      {/* Premium Editorial Hero */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pt-4 pb-8 mb-4 border-b border-slate-200/60">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1 block">Student Portal • Projects</span>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+            Projects Repository
+          </h1>
+          <p className="text-base text-slate-500 mt-2 max-w-2xl leading-relaxed">
+            Showcase software projects, open-source repositories, team innovations, and receive faculty review.
+          </p>
+        </div>
+        <div className="w-full md:w-auto">
+          <Button variant="primary" size="md" className="w-full" onClick={() => setIsModalOpen(true)}>
             <Plus className="w-4 h-4 mr-1.5" /> Add New Project
           </Button>
-        }
-      />
+        </div>
+      </div>
 
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Projects</div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{projects.length}</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">In portfolio</div>
-        </Card>
+      {/* KPI Typographic Blocks */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 py-6 mb-4">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Total Projects</span>
+          <div className="text-4xl font-black text-slate-900 tracking-tighter">{projects.length}</div>
+          <div className="text-[11px] text-slate-500 font-semibold mt-1">In portfolio</div>
+        </div>
 
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Completed
-          </div>
-          <div className="text-2xl font-black text-emerald-900 mt-1">
+        <div className="lg:border-l border-slate-200/60 lg:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Completed</span>
+          <div className="text-4xl font-black text-emerald-600 tracking-tighter">
             {projects.filter((p) => p.status === 'Completed').length}
           </div>
-          <div className="text-[11px] text-emerald-600 mt-0.5">Production / Shipped</div>
-        </Card>
+          <div className="text-[11px] text-emerald-600 font-bold mt-1">Production / Shipped</div>
+        </div>
 
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" /> In Development
-          </div>
-          <div className="text-2xl font-black text-blue-900 mt-1">
+        <div className="lg:border-l border-slate-200/60 lg:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">In Development</span>
+          <div className="text-4xl font-black text-blue-600 tracking-tighter">
             {projects.filter((p) => p.status === 'In Progress').length}
           </div>
-          <div className="text-[11px] text-blue-600 mt-0.5">Active builds</div>
-        </Card>
+          <div className="text-[11px] text-blue-600 font-bold mt-1">Active builds</div>
+        </div>
 
-        <Card className="p-4 bg-white border-slate-200">
-          <div className="text-xs font-semibold text-purple-600 uppercase tracking-wider flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> Faculty Reviewed
-          </div>
-          <div className="text-2xl font-black text-purple-900 mt-1">
+        <div className="lg:border-l border-slate-200/60 lg:pl-8">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5">Faculty Reviewed</span>
+          <div className="text-4xl font-black text-purple-600 tracking-tighter">
             {projects.filter((p) => p.is_reviewed).length}
           </div>
-          <div className="text-[11px] text-purple-600 mt-0.5">With faculty feedback</div>
-        </Card>
+          <div className="text-[11px] text-purple-600 font-bold mt-1">With feedback</div>
+        </div>
       </div>
 
       {/* Search & Filters */}
-      <Card className="p-4 bg-white border-slate-200">
-        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Search projects by title or keywords..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="flex items-center gap-1.5 w-full sm:w-auto">
-            {['All', 'Completed', 'In Progress', 'Planning'].map((st) => (
-              <button
-                key={st}
-                onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex-1 sm:flex-none ${
-                  statusFilter === st
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                {st}
-              </button>
-            ))}
-          </div>
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white rounded-[24px] border border-slate-200/60 p-4 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border-none bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-medium"
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-      </Card>
+
+        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+          {['All', 'Completed', 'In Progress', 'Planning'].map((st) => (
+            <button
+              key={st}
+              onClick={() => setStatusFilter(st)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                statusFilter === st
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'bg-transparent text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+              }`}
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Projects List */}
       {isLoading ? (
@@ -274,32 +268,32 @@ export default function StudentProjectsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredProjects.map((proj) => (
-            <Card
+            <div
               key={proj.id}
-              className="bg-white border-slate-200 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
+              className="bg-white rounded-[24px] border border-slate-200/60 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between overflow-hidden hover:border-slate-300 transition-all"
             >
-              <div className="p-6 space-y-4">
-                <div className="flex items-start justify-between gap-3">
+              <div className="p-6 sm:p-8 space-y-5">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 leading-snug">{proj.title}</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight leading-snug">{proj.title}</h3>
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">
                       Added {new Date(proj.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   {getStatusBadge(proj.status)}
                 </div>
 
-                <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                <p className="text-sm text-slate-600 leading-relaxed">
                   {proj.description}
                 </p>
 
                 {/* Tech Stack Chips */}
                 {proj.technologies && proj.technologies.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2 pt-2">
                     {proj.technologies.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700"
+                        className="px-2.5 py-1 rounded-lg bg-slate-100/80 text-[10px] font-bold text-slate-700 uppercase tracking-wider"
                       >
                         {t}
                       </span>
@@ -309,34 +303,37 @@ export default function StudentProjectsPage() {
 
                 {/* Team Members */}
                 {proj.team_members && (
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <Users className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Team: {proj.team_members}</span>
+                  <div className="flex items-center gap-2 pt-1">
+                    <div className="p-1.5 bg-slate-50 rounded-md text-slate-400">
+                      <Users className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-xs font-semibold text-slate-600">Team: {proj.team_members}</span>
                   </div>
                 )}
 
                 {/* Faculty Feedback Section */}
                 {proj.faculty_feedback && (
-                  <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-100 text-xs space-y-1">
-                    <div className="flex items-center gap-1.5 text-purple-800 font-bold">
-                      <MessageSquareQuote className="w-4 h-4" /> Faculty Mentor Feedback
+                  <div className="p-5 rounded-[16px] bg-indigo-50/50 border border-indigo-100/50 mt-4 relative">
+                    <MessageSquareQuote className="w-8 h-8 text-indigo-200 absolute top-4 right-4 opacity-50" />
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 uppercase tracking-widest mb-2">
+                      Faculty Feedback
                     </div>
-                    <p className="text-purple-950 leading-relaxed">{proj.faculty_feedback}</p>
+                    <p className="text-sm font-medium text-slate-700 leading-relaxed relative z-10">{proj.faculty_feedback}</p>
                   </div>
                 )}
               </div>
 
               {/* Card Footer Actions */}
-              <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="px-6 sm:px-8 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-4">
                   {proj.github_url && (
                     <a
                       href={proj.github_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors"
                     >
-                      <Code2 className="w-3.5 h-3.5" /> Repository
+                      <Code2 className="w-4 h-4" /> Repo
                     </a>
                   )}
                   {proj.demo_url && (
@@ -344,49 +341,44 @@ export default function StudentProjectsPage() {
                       href={proj.demo_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-indigo-600 hover:text-indigo-700 transition-colors"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                      <ExternalLink className="w-4 h-4" /> Live Demo
                     </a>
                   )}
                 </div>
 
                 <button
                   onClick={() => handleDeleteProject(proj.id, proj.title)}
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                   title="Delete Project"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}
 
       {/* Add Project Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <Card className="w-full max-w-lg bg-white shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-                  <Code className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-base">Add Project</h3>
-                  <p className="text-xs text-slate-500">Document a software build or capstone work</p>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="w-full max-w-lg bg-white rounded-[24px] shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+              <div>
+                <h3 className="text-xl font-black text-slate-900">Add Project</h3>
+                <p className="text-xs text-slate-500 mt-1">Document a software build or capstone work</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg leading-none p-1"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleAddProject} className="space-y-4">
+            <form onSubmit={handleAddProject} className="space-y-5">
               <Input
                 label="Project Title"
                 required
@@ -397,36 +389,36 @@ export default function StudentProjectsPage() {
               />
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Description</label>
+                <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Description</label>
                 <textarea
                   rows={3}
                   required
-                  className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Overview of project objectives, architecture, algorithms used, and real-world impact..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-colors"
+                  placeholder="Overview of project objectives, architecture, algorithms used..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
 
               <Input
-                label="Technologies Used (Comma-separated)"
-                placeholder="Next.js, Python, FastAPI, PostgreSQL, Docker"
+                label="Technologies (Comma-separated)"
+                placeholder="Next.js, Python, PostgreSQL"
                 value={techStackInput}
                 onChange={(e) => setTechStackInput(e.target.value)}
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="GitHub Repository URL"
+                  label="GitHub Repo URL"
                   leadingIcon={<Code2 className="w-4 h-4" />}
-                  placeholder="https://github.com/user/repo"
+                  placeholder="https://github.com/..."
                   value={githubUrl}
                   onChange={(e) => setGithubUrl(e.target.value)}
                 />
                 <Input
-                  label="Live Demo URL (Optional)"
+                  label="Live Demo URL"
                   leadingIcon={<ExternalLink className="w-4 h-4" />}
-                  placeholder="https://myproject.vercel.app"
+                  placeholder="https://..."
                   value={demoUrl}
                   onChange={(e) => setDemoUrl(e.target.value)}
                 />
@@ -434,15 +426,15 @@ export default function StudentProjectsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Team Members (Optional)"
-                  placeholder="e.g. Alex, Maya, Yashwanth"
+                  label="Team Members"
+                  placeholder="e.g. Alex, Maya"
                   value={teamMembers}
                   onChange={(e) => setTeamMembers(e.target.value)}
                 />
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Project Status</label>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Status</label>
                   <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-colors"
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
                   >
@@ -453,7 +445,7 @@ export default function StudentProjectsPage() {
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-4 flex gap-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -465,7 +457,7 @@ export default function StudentProjectsPage() {
                 <Button
                   type="submit"
                   variant="primary"
-                  className="flex-1"
+                  className="flex-1 bg-slate-900 hover:bg-slate-800 text-white"
                   isLoading={isSubmitting}
                   disabled={!title.trim()}
                 >
@@ -473,7 +465,7 @@ export default function StudentProjectsPage() {
                 </Button>
               </div>
             </form>
-          </Card>
+          </div>
         </div>
       )}
     </div>

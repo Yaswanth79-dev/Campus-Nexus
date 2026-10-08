@@ -5,8 +5,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
-import { PageHeader } from '@/components/layout/page-header';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Modal } from '@/components/ui/modal';
@@ -224,59 +222,61 @@ export default function StudentLearningPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Learning Hub & Credits System"
-        description="Open approved coding practice links, complete curriculum modules, and verify your technical skills to earn verified Learning Credits."
-        breadcrumbs={[
-          { label: 'Student Portal', href: '/student/dashboard' },
-          { label: 'Learning Hub' },
-        ]}
-      />
+      {/* Editorial Header */}
+      <div className="pt-4 pb-8 mb-4 border-b border-slate-200/60">
+        <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+          Learning Hub
+        </h1>
+        <p className="text-base text-slate-500 mt-2 max-w-2xl leading-relaxed">
+          Open practice links, complete modules, and verify your technical skills to earn Learning Credits.
+        </p>
+      </div>
 
       {/* Hero Credits & Stats Banner */}
-      <div className="rounded-2xl bg-linear-to-r from-blue-900 via-indigo-900 to-purple-950 p-6 text-white shadow-xl relative overflow-hidden">
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center">
+      <div className="rounded-[24px] bg-slate-900 p-8 text-white shadow-md relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+          <Trophy className="w-64 h-64" />
+        </div>
+        
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-center">
           
           {/* Main Credits Total */}
-          <div className="space-y-1">
-            <span className="text-xs uppercase font-extrabold tracking-wider text-amber-300 flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-amber-400" /> Total Verified Credits
+          <div className="space-y-2">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-300">
+              Total Verified Credits
             </span>
-            <div className="text-4xl sm:text-5xl font-black tracking-tight text-white flex items-baseline gap-2">
+            <div className="text-5xl font-black tracking-tighter text-white flex items-baseline gap-2">
               <span>{totalCredits}</span>
-              <span className="text-sm font-medium text-blue-200">pts</span>
+              <span className="text-base font-semibold text-indigo-400">pts</span>
             </div>
-            <p className="text-[11px] text-blue-200/80">Credited to your academic transcript</p>
           </div>
 
           {/* Activities Completed */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 space-y-1">
-            <div className="text-xs font-semibold text-blue-200 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Completed Tasks
-            </div>
-            <div className="text-2xl font-bold text-white">{completedCount} Modules</div>
-            <div className="text-[11px] text-blue-200/80">Out of {modules.length} total tracks</div>
+          <div className="space-y-2 lg:border-l lg:border-white/10 lg:pl-8">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
+              Completed Tasks
+            </span>
+            <div className="text-3xl font-extrabold text-white">{completedCount} <span className="text-sm font-medium text-slate-500">/ {modules.length}</span></div>
           </div>
 
           {/* Average Assessment Score */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 space-y-1">
-            <div className="text-xs font-semibold text-blue-200 flex items-center gap-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-indigo-300" /> Average Assessment Score
-            </div>
-            <div className="text-2xl font-bold text-emerald-300">{averageScore}%</div>
-            <div className="text-[11px] text-blue-200/80">Verified technical passing rate</div>
+          <div className="space-y-2 lg:border-l lg:border-white/10 lg:pl-8">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
+              Average Score
+            </span>
+            <div className="text-3xl font-extrabold text-emerald-400">{averageScore}%</div>
           </div>
 
           {/* Department Benchmark */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 space-y-1">
-            <div className="text-xs font-semibold text-blue-200 flex items-center gap-1.5">
-              <Brain className="w-3.5 h-3.5 text-amber-300" /> Tier Standing
+          <div className="space-y-2 lg:border-l lg:border-white/10 lg:pl-8">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
+              Tier Standing
+            </span>
+            <div className="text-xl font-bold text-white">
+              {totalCredits >= 150 ? 'Tier 1 Expert' : totalCredits >= 50 ? 'Tier 2 Inter.' : 'Tier 3 Emerging'}
             </div>
-            <div className="text-2xl font-bold text-white">
-              {totalCredits >= 150 ? 'Tier 1 Expert' : totalCredits >= 50 ? 'Tier 2 Intermediate' : 'Tier 3 Emerging'}
-            </div>
-            <div className="text-[11px] text-blue-200/80">
-              {totalCredits >= 150 ? '🌟 High Honors Benchmark' : `${150 - totalCredits} pts to Tier 1`}
+            <div className="text-[11px] text-indigo-300 font-semibold mt-1">
+              {totalCredits >= 150 ? 'High Honors' : `${150 - totalCredits} pts to Tier 1`}
             </div>
           </div>
 
@@ -290,19 +290,19 @@ export default function StudentLearningPage() {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Filter Bar */}
-          <Card className="p-4 bg-white border-slate-200 space-y-3">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="p-4 sm:p-6 rounded-[24px] bg-white border border-slate-200/60 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               
               {/* Category Filter Chips */}
-              <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                 {['All', 'Practice', 'Test', 'Quiz', 'Course'].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                       selectedCategory === cat
                         ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/60'
                     }`}
                   >
                     {cat}
@@ -311,10 +311,10 @@ export default function StudentLearningPage() {
               </div>
 
               {/* Topic Select */}
-              <div className="flex items-center gap-2 text-xs text-slate-500 w-full sm:w-auto">
-                <span className="font-semibold shrink-0">Topic:</span>
+              <div className="flex items-center gap-3 w-full sm:w-auto border-t sm:border-t-0 border-slate-100 pt-3 sm:pt-0">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 shrink-0">Topic</span>
                 <select
-                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+                  className="w-full sm:w-[200px] rounded-xl border border-slate-200/60 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 appearance-none cursor-pointer"
                   value={selectedTopic}
                   onChange={(e) => setSelectedTopic(e.target.value)}
                 >
@@ -325,9 +325,8 @@ export default function StudentLearningPage() {
                   ))}
                 </select>
               </div>
-
             </div>
-          </Card>
+          </div>
 
           {/* Module List */}
           {isLoading ? (
@@ -335,11 +334,11 @@ export default function StudentLearningPage() {
               <LoadingSpinner size="lg" message="Loading learning modules..." />
             </div>
           ) : filteredModules.length === 0 ? (
-            <Card className="p-8 text-center bg-white border-slate-200">
-              <BookOpen className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-              <p className="text-sm font-semibold text-slate-700">No matching learning modules found</p>
-              <p className="text-xs text-slate-500 mt-1">Try selecting a different category or topic filter.</p>
-            </Card>
+            <div className="p-12 text-center rounded-[24px] border border-dashed border-slate-300 bg-slate-50">
+              <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <p className="text-base font-bold text-slate-900">No matching modules found</p>
+              <p className="text-sm text-slate-500 mt-1">Try selecting a different category or topic.</p>
+            </div>
           ) : (
             <div className="space-y-4">
               {filteredModules.map((mod) => {
@@ -348,42 +347,39 @@ export default function StudentLearningPage() {
                 );
 
                 return (
-                  <Card
+                  <div
                     key={mod.id}
-                    className={`transition-all hover:border-slate-300 ${
-                      isCompleted ? 'bg-emerald-50/20 border-emerald-200/80' : 'bg-white border-slate-200'
+                    className={`rounded-[24px] border transition-all ${
+                      isCompleted ? 'bg-emerald-50/30 border-emerald-100/60' : 'bg-white border-slate-200/60 hover:border-slate-300/80 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]'
                     }`}
                   >
-                    <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <div className="space-y-1.5 flex-1">
+                    <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                      <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Badge
-                            variant={mod.category === 'Test' ? 'danger' : mod.category === 'Course' ? 'blue' : 'warning'}
-                            size="sm"
-                          >
+                          <Badge variant="default" size="sm">
                             {mod.category}
                           </Badge>
-                          <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">
                             {mod.topic}
                           </span>
-                          <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                          <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
                             <Clock className="w-3 h-3" /> {mod.estimated_time || '30 mins'}
                           </span>
                           {isCompleted && (
-                            <Badge variant="success" size="sm">
-                              ✓ Completed & Credited
-                            </Badge>
+                            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> Completed
+                            </span>
                           )}
                         </div>
 
-                        <h3 className="text-base font-bold text-slate-900">{mod.title}</h3>
-                        <p className="text-xs text-slate-500 leading-relaxed">{mod.description}</p>
+                        <h3 className="text-lg font-bold text-slate-900">{mod.title}</h3>
+                        <p className="text-sm text-slate-500 leading-relaxed">{mod.description}</p>
                       </div>
 
-                      <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                        <div className="flex items-center gap-1.5 text-amber-600 font-extrabold text-sm">
-                          <Trophy className="w-4 h-4 text-amber-500" />
-                          <span>+{mod.credits_reward} Credits</span>
+                      <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4 shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                        <div className="flex items-center gap-1.5 text-indigo-600 font-black text-lg">
+                          <span>+{mod.credits_reward}</span>
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-400">Pts</span>
                         </div>
 
                         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -392,22 +388,22 @@ export default function StudentLearningPage() {
                               href={mod.external_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold flex items-center gap-1 transition-colors"
+                              className="px-4 py-2 rounded-xl border border-slate-200/60 text-slate-700 hover:bg-slate-50 text-xs font-bold transition-colors"
                             >
-                              <ExternalLink className="w-3.5 h-3.5 text-blue-600" /> Open Link
+                              Open Link
                             </a>
                           )}
                           <Button
-                            variant={isCompleted ? 'outline' : 'primary'}
-                            size="sm"
+                            variant={isCompleted ? 'secondary' : 'primary'}
+                            size="md"
                             onClick={() => handleOpenAssessment(mod)}
                           >
-                            {isCompleted ? 'Re-Assess' : 'Start & Verify'}
+                            {isCompleted ? 'Re-Assess' : 'Start Assessment'}
                           </Button>
                         </div>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 );
               })}
             </div>
@@ -419,72 +415,57 @@ export default function StudentLearningPage() {
         <div className="space-y-6">
 
           {/* Credits Rewards Structure */}
-          <Card className="border-amber-200 bg-amber-50/40">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-amber-900">
-                <Award className="w-4 h-4 text-amber-600" /> Credit Scoring Structure
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2.5 text-xs text-amber-950">
-              <div className="flex justify-between items-center py-1 border-b border-amber-200/60">
-                <span>Beginner Coding Test</span>
-                <strong className="text-amber-700">+10 Credits</strong>
+          <section className="bg-slate-50 rounded-[24px] border border-slate-200/60 p-6 md:p-8">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Credit Structure</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200/60">
+                <span className="text-sm font-semibold text-slate-700">Beginner Test</span>
+                <span className="text-sm font-bold text-indigo-600">+10 Pts</span>
               </div>
-              <div className="flex justify-between items-center py-1 border-b border-amber-200/60">
-                <span>Intermediate Test</span>
-                <strong className="text-amber-700">+20 Credits</strong>
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200/60">
+                <span className="text-sm font-semibold text-slate-700">Intermediate Test</span>
+                <span className="text-sm font-bold text-indigo-600">+20 Pts</span>
               </div>
-              <div className="flex justify-between items-center py-1 border-b border-amber-200/60">
-                <span>Advanced Algorithmic Test</span>
-                <strong className="text-amber-700">+30 Credits</strong>
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200/60">
+                <span className="text-sm font-semibold text-slate-700">Advanced Test</span>
+                <span className="text-sm font-bold text-indigo-600">+30 Pts</span>
               </div>
-              <div className="flex justify-between items-center py-1 border-b border-amber-200/60">
-                <span>Full Online Course</span>
-                <strong className="text-amber-700">+50 Credits</strong>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold text-slate-700">Online Course</span>
+                <span className="text-sm font-bold text-indigo-600">+50 Pts</span>
               </div>
-              <div className="flex justify-between items-center py-1">
-                <span>Technical Quiz</span>
-                <strong className="text-amber-700">+10 Credits</strong>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
           {/* Recent Activity Log */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <History className="w-4 h-4 text-blue-600" /> Completed Activity Log
-              </CardTitle>
-              <CardDescription>Real-time audit history of earned credits</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {activities.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400">
-                  No learning activities verified yet. Open a task link and complete its assessment to earn credits!
-                </div>
-              ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
-                  {activities.map((act) => (
-                    <div
-                      key={act.id}
-                      className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1 text-xs"
-                    >
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="font-bold text-slate-900 leading-tight">{act.module_title}</span>
-                        <span className="text-amber-600 font-extrabold shrink-0">
-                          +{act.credits_earned} pts
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                        <span>Score: <strong className="text-emerald-600">{act.score}%</strong></span>
-                        <span>{new Date(act.created_at).toLocaleDateString()}</span>
-                      </div>
+          <section className="bg-white rounded-[24px] border border-slate-200/60 p-6 md:p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Activity Log</h3>
+            {activities.length === 0 ? (
+              <div className="py-8 text-center text-sm text-slate-500 border border-dashed border-slate-300 rounded-[16px]">
+                No verified activities yet.
+              </div>
+            ) : (
+              <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
+                {activities.map((act) => (
+                  <div
+                    key={act.id}
+                    className="pb-4 border-b border-slate-100 last:border-0 last:pb-0"
+                  >
+                    <div className="flex justify-between items-start gap-3">
+                      <span className="font-bold text-sm text-slate-900">{act.module_title}</span>
+                      <span className="text-indigo-600 font-extrabold text-sm shrink-0">
+                        +{act.credits_earned} pts
+                      </span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Score: {act.score}%</span>
+                      <span className="text-[11px] font-semibold text-slate-400">{new Date(act.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       </div>
 
