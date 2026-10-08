@@ -18,7 +18,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
 
   return (
     <RoleGuard allowedRoles={[role]}>
-      <div className="min-h-screen bg-slate-50 flex">
+      <div className="min-h-screen flex bg-transparent">
         {/* Desktop Sidebar */}
         <Sidebar
           role={role}

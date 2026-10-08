@@ -95,15 +95,15 @@ export function StatCard({
     <CardWrapper
       href={href}
       className={cn(
-        'group relative flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-200',
-        href && 'hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300 cursor-pointer'
+        'group relative flex flex-col justify-between rounded-[24px] border border-slate-200/60 bg-white/95 backdrop-blur-sm p-6 sm:p-7 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.03)] transition-all duration-300',
+        href && 'hover:-translate-y-1 hover:shadow-[0_12px_32px_-4px_rgba(0,0,0,0.06)] hover:border-slate-300/80 cursor-pointer'
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{title}</p>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
               {value}
             </span>
             {change && (
@@ -124,7 +124,7 @@ export function StatCard({
           </div>
         </div>
 
-        <div className={cn('rounded-xl p-2.5 shrink-0 transition-transform group-hover:scale-105', iconBgClasses[variant])}>
+        <div className={cn('rounded-2xl p-3 shrink-0 transition-transform group-hover:scale-105 shadow-sm', iconBgClasses[variant])}>
           {iconElement}
         </div>
       </div>

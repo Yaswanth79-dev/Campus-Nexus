@@ -6,24 +6,24 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.99] select-none cursor-pointer',
+  'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] select-none cursor-pointer',
   {
     variants: {
       variant: {
         primary:
-          'bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-900 shadow-sm',
+          'bg-slate-900 text-white hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-slate-900 shadow-md',
         accent:
-          'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-600 shadow-sm',
+          'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-indigo-600 shadow-md',
         secondary:
-          'bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-400 border border-slate-200',
+          'bg-white text-slate-900 hover:bg-slate-50 hover:shadow-md focus-visible:ring-slate-400 border border-slate-200/80 shadow-sm',
         outline:
-          'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 focus-visible:ring-slate-400 shadow-xs',
+          'border border-slate-200/80 bg-white/50 backdrop-blur-sm text-slate-700 hover:bg-white hover:text-slate-900 focus-visible:ring-slate-400 shadow-sm',
         ghost:
-          'text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus-visible:ring-slate-400',
+          'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 focus-visible:ring-slate-400',
         danger:
-          'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-600 shadow-sm',
+          'bg-rose-600 text-white hover:bg-rose-700 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-rose-600 shadow-md',
         subtle:
-          'bg-blue-50 text-blue-700 hover:bg-blue-100 focus-visible:ring-blue-500',
+          'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 focus-visible:ring-indigo-500',
       },
       size: {
         xs: 'h-8 px-2.5 text-xs gap-1.5',

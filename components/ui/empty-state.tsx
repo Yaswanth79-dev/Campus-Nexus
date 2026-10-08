@@ -25,15 +25,15 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-xl border border-dashed border-slate-300 bg-slate-50/50',
+        'flex flex-col items-center justify-center p-10 sm:p-14 text-center rounded-[24px] border border-dashed border-slate-200 bg-white/50 backdrop-blur-sm',
         className
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-500 mb-4 ring-8 ring-slate-100/50">
-        {icon || <Inbox className="h-6 w-6 text-slate-400" />}
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 mb-6 ring-[12px] ring-slate-50/50 shadow-xs">
+        {icon || <Inbox className="h-7 w-7 text-slate-400" />}
       </div>
-      <h4 className="text-base font-semibold text-slate-900">{title}</h4>
-      <p className="text-sm text-slate-500 mt-1 max-w-sm">{description}</p>
+      <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
+      <p className="text-sm text-slate-500 mt-2 max-w-md leading-relaxed">{description}</p>
       {actionLabel && (onAction || actionHref) && (
         <div className="mt-5">
           {actionHref ? (

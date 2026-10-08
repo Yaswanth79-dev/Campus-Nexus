@@ -41,8 +41,8 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        'relative flex flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out select-none shrink-0 h-screen sticky top-0',
-        isCollapsed ? 'w-18' : 'w-64',
+        'relative flex flex-col border border-slate-200/60 bg-white/90 backdrop-blur-xl transition-all duration-300 ease-in-out select-none shrink-0 h-[calc(100vh-2rem)] my-4 ml-4 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-4',
+        isCollapsed ? 'w-20' : 'w-64',
         className
       )}
     >
@@ -53,8 +53,8 @@ export function Sidebar({
           className="flex items-center gap-2.5 overflow-hidden"
           onClick={onItemClick}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
-            <Cpu className="w-5 h-5 text-blue-400" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-md">
+            <Cpu className="w-5 h-5 text-indigo-400" />
           </div>
 
           {!isCollapsed && (
@@ -109,7 +109,7 @@ export function Sidebar({
                     className={cn(
                       'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-blue-50/90 text-blue-700 font-semibold'
+                        ? 'bg-indigo-50/90 text-indigo-700 font-semibold shadow-sm ring-1 ring-indigo-100/50'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
                       isCollapsed && 'justify-center px-0'
                     )}
@@ -118,7 +118,7 @@ export function Sidebar({
                       <span
                         className={cn(
                           'transition-colors',
-                          isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'
+                          isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'
                         )}
                       >
                         {getNavIcon(item.icon, 'w-4 h-4')}
@@ -131,7 +131,7 @@ export function Sidebar({
                       <span
                         className={cn(
                           'rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0',
-                          item.badgeVariant === 'primary' && 'bg-blue-100 text-blue-700',
+                          item.badgeVariant === 'primary' && 'bg-indigo-100 text-indigo-700',
                           item.badgeVariant === 'success' && 'bg-emerald-100 text-emerald-700',
                           item.badgeVariant === 'warning' && 'bg-amber-100 text-amber-800',
                           item.badgeVariant === 'danger' && 'bg-rose-100 text-rose-700',
@@ -152,8 +152,8 @@ export function Sidebar({
 
       {/* Bottom Subtitle / Info */}
       {!isCollapsed && (
-        <div className="p-3 border-t border-slate-100 bg-slate-50/50">
-          <div className="rounded-lg p-2.5 bg-white border border-slate-200/80 shadow-xs">
+        <div className="p-4 border-t border-slate-100 bg-slate-50/30 rounded-b-[24px]">
+          <div className="rounded-2xl p-3 bg-white border border-slate-200/60 shadow-sm">
             <div className="text-[11px] font-semibold text-slate-800">IT Department Portal</div>
             <div className="text-[10px] text-slate-500 mt-0.5">Development & Intelligence</div>
           </div>
