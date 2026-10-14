@@ -46,8 +46,8 @@ DECLARE
   v_caller_dept TEXT;
   v_caller_is_hod BOOLEAN;
 BEGIN
-  -- Allow service_role bypass or active institutional provisioning session
-  IF current_setting('role', true) = 'service_role' OR current_setting('nexus.institutional_provisioning', true) = 'active' THEN
+  -- Strictly allow only authentic service_role session (server-side administrative process) to bypass
+  IF current_setting('role', true) = 'service_role' THEN
     RETURN NEW;
   END IF;
 
@@ -194,10 +194,7 @@ BEGIN
     END IF;
   END IF;
 
-  -- Authorize trigger execution via transaction-local setting
-  PERFORM set_config('nexus.institutional_provisioning', 'active', true);
-
-  -- Update profiles table
+  -- Update profiles table (allowed because caller is authenticated as service_role)
   UPDATE public.profiles
   SET role = v_final_role,
       department = v_final_dept,
@@ -234,9 +231,6 @@ BEGIN
     jsonb_build_object('role', v_final_role, 'department', v_final_dept, 'is_active', v_final_active),
     p_reason
   ) RETURNING id INTO v_audit_id;
-
-  -- Reset transaction-local setting
-  PERFORM set_config('nexus.institutional_provisioning', 'inactive', true);
 
   RETURN jsonb_build_object(
     'success', true,

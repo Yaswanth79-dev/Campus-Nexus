@@ -46,7 +46,7 @@ DECLARE
   v_caller_dept TEXT;
   v_caller_is_hod BOOLEAN;
 BEGIN
-  IF current_setting('role', true) = 'service_role' OR current_setting('nexus.institutional_provisioning', true) = 'active' THEN
+  IF current_setting('role', true) = 'service_role' THEN
     RETURN NEW;
   END IF;
 
@@ -170,8 +170,7 @@ BEGIN
     END IF;
   END IF;
 
-  PERFORM set_config('nexus.institutional_provisioning', 'active', true);
-
+  -- Update profiles table (allowed because caller is authenticated as service_role)
   UPDATE public.profiles
   SET role = v_final_role,
       department = v_final_dept,
@@ -206,8 +205,6 @@ BEGIN
     jsonb_build_object('role', v_final_role, 'department', v_final_dept, 'is_active', v_final_active),
     p_reason
   ) RETURNING id INTO v_audit_id;
-
-  PERFORM set_config('nexus.institutional_provisioning', 'inactive', true);
 
   RETURN jsonb_build_object(
     'success', true,
@@ -706,6 +703,20 @@ BEGIN
     INSERT INTO test_results VALUES (11, 'Unauthorized Provisioning Call', 'FAIL', 'Student was unexpectedly able to execute institutional provisioning RPC');
   EXCEPTION WHEN OTHERS THEN
     INSERT INTO test_results VALUES (11, 'Unauthorized Provisioning Call', 'PASS', 'Unauthorized caller rejected by permission gate: ' || SQLERRM);
+  END;
+
+  -- ============================================================================
+  -- TEST 12: Rejection of Forged Provisioning Configuration Flag
+  -- ============================================================================
+  PERFORM set_config('role', 'authenticated', true);
+  PERFORM set_config('request.jwt.claim.sub', v_stu_it::text, true);
+  BEGIN
+    -- Malicious actor attempts to forge custom GUC flag
+    PERFORM set_config('nexus.institutional_provisioning', 'active', true);
+    UPDATE public.profiles SET role = 'hod' WHERE id = v_stu_it;
+    INSERT INTO test_results VALUES (12, 'Forged Provisioning Flag Rejection', 'FAIL', 'Student bypassed trigger by setting forged GUC flag');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO test_results VALUES (12, 'Forged Provisioning Flag Rejection', 'PASS', 'Forged GUC flag ignored; tampering strictly rejected: ' || SQLERRM);
   END;
 
 END $$;

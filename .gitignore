@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# database backups & raw data dumps
+docs/*backup*.json
+docs/*.raw.json
+docs/portfolio_backup_raw.json
+*.backup.json
