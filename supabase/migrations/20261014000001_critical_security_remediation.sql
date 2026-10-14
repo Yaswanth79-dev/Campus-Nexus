@@ -46,8 +46,8 @@ DECLARE
   v_caller_dept TEXT;
   v_caller_is_hod BOOLEAN;
 BEGIN
-  -- Allow service_role bypass for administrative system workers
-  IF current_setting('role', true) = 'service_role' THEN
+  -- Allow service_role bypass or active institutional provisioning session
+  IF current_setting('role', true) = 'service_role' OR current_setting('nexus.institutional_provisioning', true) = 'active' THEN
     RETURN NEW;
   END IF;
 
@@ -106,6 +106,153 @@ DROP TRIGGER IF EXISTS enforce_profile_integrity ON public.profiles;
 CREATE TRIGGER enforce_profile_integrity
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.prevent_profile_tampering();
+
+-- ==============================================================================
+-- 2B. INSTITUTIONAL ADMINISTRATIVE PROVISIONING (AUTHORIZED & AUDITED PATH)
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS public.institutional_audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  performed_by UUID, -- auth.uid() or NULL if service_role
+  actor_role TEXT NOT NULL DEFAULT 'service_role',
+  target_user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  action TEXT NOT NULL, -- 'PROVISION_USER', 'PROMOTE_ROLE', 'TRANSFER_DEPARTMENT', 'ACTIVATE_ACCOUNT', 'DEACTIVATE_ACCOUNT'
+  old_values JSONB NOT NULL DEFAULT '{}'::jsonb,
+  new_values JSONB NOT NULL DEFAULT '{}'::jsonb,
+  reason TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.institutional_audit_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "audit_logs_service_role_all" ON public.institutional_audit_logs;
+CREATE POLICY "audit_logs_service_role_all" ON public.institutional_audit_logs
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+-- Revoke insert/update/delete from non-admins
+REVOKE ALL ON public.institutional_audit_logs FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT ON public.institutional_audit_logs TO service_role;
+
+CREATE OR REPLACE FUNCTION public.institutional_provision_profile(
+  p_target_user_id UUID,
+  p_new_role public.user_role DEFAULT NULL,
+  p_new_department TEXT DEFAULT NULL,
+  p_is_active BOOLEAN DEFAULT NULL,
+  p_reason TEXT DEFAULT 'Institutional administrative provisioning'
+)
+RETURNS JSONB AS $$
+DECLARE
+  v_caller_role TEXT;
+  v_caller_uid UUID;
+  v_old_profile RECORD;
+  v_final_role public.user_role;
+  v_final_dept TEXT;
+  v_final_active BOOLEAN;
+  v_audit_id UUID;
+  v_action TEXT := 'ADMIN_UPDATE';
+BEGIN
+  v_caller_role := current_setting('role', true);
+  v_caller_uid := auth.uid();
+
+  -- Strict Authorization Gate:
+  -- Only service_role OR callers with institutional admin claim in app_metadata can execute
+  IF v_caller_role != 'service_role' AND COALESCE(auth.jwt()->'app_metadata'->>'is_institutional_admin', 'false') != 'true' THEN
+    RAISE EXCEPTION 'Unauthorized: Only institutional administrators via authorized server-side service role can execute institutional provisioning.';
+  END IF;
+
+  -- Verify target profile exists
+  SELECT id, full_name, email, role, department, is_active
+  INTO v_old_profile
+  FROM public.profiles
+  WHERE id = p_target_user_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Target user profile not found for id: %', p_target_user_id;
+  END IF;
+
+  -- Validate department if provided
+  IF p_new_department IS NOT NULL THEN
+    IF NOT EXISTS (SELECT 1 FROM public.departments WHERE code = p_new_department) THEN
+      RAISE EXCEPTION 'Invalid department code: %', p_new_department;
+    END IF;
+  END IF;
+
+  v_final_role := COALESCE(p_new_role, v_old_profile.role);
+  v_final_dept := COALESCE(p_new_department, v_old_profile.department);
+  v_final_active := COALESCE(p_is_active, v_old_profile.is_active);
+
+  -- Determine specific action
+  IF p_new_role IS NOT NULL AND p_new_role != v_old_profile.role THEN
+    v_action := 'PROMOTE_ROLE';
+  ELSIF p_new_department IS NOT NULL AND p_new_department != v_old_profile.department THEN
+    v_action := 'TRANSFER_DEPARTMENT';
+  ELSIF p_is_active IS NOT NULL AND p_is_active != v_old_profile.is_active THEN
+    IF p_is_active THEN
+      v_action := 'ACTIVATE_ACCOUNT';
+    ELSE
+      v_action := 'DEACTIVATE_ACCOUNT';
+    END IF;
+  END IF;
+
+  -- Authorize trigger execution via transaction-local setting
+  PERFORM set_config('nexus.institutional_provisioning', 'active', true);
+
+  -- Update profiles table
+  UPDATE public.profiles
+  SET role = v_final_role,
+      department = v_final_dept,
+      is_active = v_final_active,
+      updated_at = now()
+  WHERE id = p_target_user_id;
+
+  -- Synchronize child role records
+  IF v_final_role = 'faculty' OR v_final_role = 'hod' THEN
+    INSERT INTO public.faculty (id, department)
+    VALUES (p_target_user_id, v_final_dept)
+    ON CONFLICT (id) DO UPDATE SET department = EXCLUDED.department;
+  ELSIF v_final_role = 'student' THEN
+    INSERT INTO public.students (id, branch)
+    VALUES (p_target_user_id, v_final_dept)
+    ON CONFLICT (id) DO UPDATE SET branch = EXCLUDED.branch;
+  END IF;
+
+  -- Insert immutable audit record
+  INSERT INTO public.institutional_audit_logs (
+    performed_by,
+    actor_role,
+    target_user_id,
+    action,
+    old_values,
+    new_values,
+    reason
+  ) VALUES (
+    v_caller_uid,
+    COALESCE(v_caller_role, 'service_role'),
+    p_target_user_id,
+    v_action,
+    jsonb_build_object('role', v_old_profile.role, 'department', v_old_profile.department, 'is_active', v_old_profile.is_active),
+    jsonb_build_object('role', v_final_role, 'department', v_final_dept, 'is_active', v_final_active),
+    p_reason
+  ) RETURNING id INTO v_audit_id;
+
+  -- Reset transaction-local setting
+  PERFORM set_config('nexus.institutional_provisioning', 'inactive', true);
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'audit_log_id', v_audit_id,
+    'action', v_action,
+    'target_user_id', p_target_user_id,
+    'role', v_final_role,
+    'department', v_final_dept,
+    'is_active', v_final_active
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- Revoke from ordinary users, grant only to service_role
+REVOKE ALL ON FUNCTION public.institutional_provision_profile(UUID, public.user_role, TEXT, BOOLEAN, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.institutional_provision_profile(UUID, public.user_role, TEXT, BOOLEAN, TEXT) TO service_role;
 
 -- ==============================================================================
 -- 3. STUDENT ACADEMIC INTEGRITY TRIGGER (PREVENT CGPA & ENROLLMENT TAMPERING)
