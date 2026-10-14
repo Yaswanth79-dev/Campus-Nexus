@@ -45,7 +45,8 @@ export default function HodDashboardPage() {
           .select('id')
           .eq('role', 'student')
           .eq('department', dept);
-        if (sData) setStudentCount(sData.length);
+        const studentIds = ((sData as { id: string }[]) || []).map((s) => s.id);
+        if (sData) setStudentCount(studentIds.length);
 
         // 2. Faculty in department
         const { data: fData } = await supabase
@@ -67,19 +68,29 @@ export default function HodDashboardPage() {
           setRecentGrievances(list.slice(0, 3));
         }
 
-        // 4. Innovation ideas
-        const { data: iData } = await supabase
-          .from('innovation_ideas')
-          .select('id');
-        if (iData) setActiveIdeas(iData.length);
+        // 4. Innovation ideas from department students
+        if (studentIds.length > 0) {
+          const { data: iData } = await supabase
+            .from('innovation_ideas')
+            .select('id')
+            .in('student_id', studentIds);
+          if (iData) setActiveIdeas(iData.length);
+        } else {
+          setActiveIdeas(0);
+        }
 
-        // 5. Total Learning Credits in Department
-        const { data: actData } = await supabase
-          .from('student_learning_activities')
-          .select('credits_earned');
-        if (actData) {
-          const list = actData as Tables<'student_learning_activities'>[];
-          setTotalCreditsEarned(list.reduce((acc, a) => acc + (a.credits_earned || 0), 0));
+        // 5. Total Learning Credits earned by department students
+        if (studentIds.length > 0) {
+          const { data: actData } = await supabase
+            .from('student_learning_activities')
+            .select('credits_earned')
+            .in('student_id', studentIds);
+          if (actData) {
+            const list = actData as Tables<'student_learning_activities'>[];
+            setTotalCreditsEarned(list.reduce((acc, a) => acc + (a.credits_earned || 0), 0));
+          }
+        } else {
+          setTotalCreditsEarned(0);
         }
       } catch (err) {
         console.error('Error fetching HOD dashboard:', err);

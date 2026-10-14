@@ -33,6 +33,7 @@ import {
   Download,
   Paperclip,
   ExternalLink,
+  Lock,
 } from 'lucide-react';
 
 export default function StudentProfilePage() {
@@ -193,41 +194,22 @@ export default function StudentProfilePage() {
     setIsSaving(true);
     try {
       const supabase = getSupabaseBrowserClient();
-      const selectedDept = formData.department || user.department || 'IT';
-
-      // 1. Update profiles table
+      // 1. Update profiles table - only personal profile fields allowed
       const { error: profileError } = await (supabase
         .from('profiles') as any)
         .update({
           full_name: formData.fullName.trim() || user.fullName || 'Student',
           phone: formData.phone.trim() || null,
           avatar_url: formData.avatarUrl || null,
-          department: selectedDept,
         })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
 
-      // 2. Upsert students table
-      const cgpaVal = formData.cgpa != null && !isNaN(Number(formData.cgpa)) 
-        ? Number(formData.cgpa) 
-        : null;
-      const admissionYearVal = formData.admissionYear != null && !isNaN(Number(formData.admissionYear))
-        ? Number(formData.admissionYear)
-        : null;
-
+      // 2. Update students table - only personal and career fields allowed (academic fields are protected)
       const { error: studentError } = await (supabase
         .from('students') as any)
-        .upsert({
-          id: user.id,
-          roll_number: formData.rollNumber?.trim() || null,
-          year: Number(formData.year) || 1,
-          semester: Number(formData.semester) || 1,
-          section: formData.section?.trim() || 'A',
-          branch: selectedDept,
-          batch: formData.batch?.trim() || null,
-          admission_year: admissionYearVal,
-          cgpa: cgpaVal,
+        .update({
           date_of_birth: formData.dateOfBirth ? formData.dateOfBirth : null,
           gender: formData.gender as any,
           bio: formData.bio?.trim() || null,
@@ -241,7 +223,8 @@ export default function StudentProfilePage() {
           internship_status: formData.internshipStatus as any,
           placement_status: formData.placementStatus as any,
           higher_studies: Boolean(formData.higherStudies),
-        });
+        })
+        .eq('id', user.id);
 
       if (studentError) throw studentError;
 
@@ -429,87 +412,64 @@ export default function StudentProfilePage() {
                 <CardTitle className="text-base flex items-center gap-2">
                   <GraduationCap className="w-4 h-4 text-indigo-600" /> Academic Credentials & Standing
                 </CardTitle>
-                <CardDescription>Department affiliation, semester status, and verified CGPA</CardDescription>
+                <CardDescription>Official institutional enrollment, semester standing, and registrar-verified CGPA</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-2.5">
+                  <Lock className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Department / Branch <span className="text-rose-500">*</span>
-                    </label>
-                    <select
-                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.department}
-                      onChange={(e) => handleInputChange('department', e.target.value)}
-                    >
-                      <option value="IT">Information Technology (IT)</option>
-                      <option value="CSE">Computer Science & Engineering (CSE)</option>
-                      <option value="ECE">Electronics & Communication Engineering (ECE)</option>
-                      <option value="EEE">Electrical & Electronics Engineering (EEE)</option>
-                      <option value="MECH">Mechanical Engineering (MECH)</option>
-                      <option value="CIVIL">Civil Engineering (CIVIL)</option>
-                    </select>
+                    <span className="font-bold text-slate-800">Protected Academic Credentials: </span>
+                    Department affiliation, roll number, semester standing, and cumulative CGPA are official records verified by the academic registry and cannot be self-modified. Contact your department HOD or registrar for official record updates.
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <Input
-                    label="Roll / Registration No."
-                    value={formData.rollNumber}
-                    onChange={(e) => handleInputChange('rollNumber', e.target.value)}
-                    placeholder="e.g. 21IT042"
+                    label="Department / Branch"
+                    disabled
+                    value={formData.department ? `${formData.department} (Information Technology)` : (user?.department || 'IT')}
+                    helperText="Official department assignment"
                   />
 
                   <Input
-                    label="Batch"
-                    value={formData.batch}
-                    onChange={(e) => handleInputChange('batch', e.target.value)}
-                    placeholder="e.g. 2023-2027"
+                    label="Roll / Registration No."
+                    disabled
+                    value={formData.rollNumber || 'Assigned by Registrar'}
+                    helperText="Institutional registration number"
+                  />
+
+                  <Input
+                    label="Graduation Batch"
+                    disabled
+                    value={formData.batch || '2023-2027'}
+                    helperText="Admitted batch"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Year of Study</label>
-                    <select
-                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.year}
-                      onChange={(e) => handleInputChange('year', Number(e.target.value))}
-                    >
-                      <option value={1}>1st Year</option>
-                      <option value={2}>2nd Year</option>
-                      <option value={3}>3rd Year</option>
-                      <option value={4}>4th Year</option>
-                    </select>
-                  </div>
+                  <Input
+                    label="Year of Study"
+                    disabled
+                    value={`${formData.year || 1} Year`}
+                  />
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Current Semester</label>
-                    <select
-                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.semester}
-                      onChange={(e) => handleInputChange('semester', Number(e.target.value))}
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-                        <option key={s} value={s}>Semester {s}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <Input
+                    label="Current Semester"
+                    disabled
+                    value={`Semester ${formData.semester || 1}`}
+                  />
 
                   <Input
                     label="Section"
-                    value={formData.section}
-                    onChange={(e) => handleInputChange('section', e.target.value)}
-                    placeholder="A"
+                    disabled
+                    value={formData.section || 'A'}
                   />
 
                   <Input
                     label="Cumulative CGPA"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="10"
-                    value={formData.cgpa}
-                    onChange={(e) => handleInputChange('cgpa', e.target.value)}
-                    placeholder="8.50"
+                    disabled
+                    value={formData.cgpa != null ? Number(formData.cgpa).toFixed(2) : '8.50'}
+                    helperText="Registrar verified"
                   />
                 </div>
               </CardContent>

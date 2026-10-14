@@ -78,16 +78,40 @@ export default function HodReportsPage() {
     setIsGenerating(true);
     try {
       const supabase = getSupabaseBrowserClient();
+      const dept = user.department || 'IT';
+
+      // 1. Fetch genuine department telemetry for audit dossier
+      const [stuRes, facRes, grievRes] = await Promise.all([
+        supabase.from('profiles').select('id').eq('role', 'student').eq('department', dept),
+        supabase.from('profiles').select('id').eq('role', 'faculty').eq('department', dept),
+        supabase.from('feedback_grievances').select('id, status').eq('department', dept),
+      ]);
+
+      const studentCount = stuRes.data?.length || 0;
+      const facultyCount = facRes.data?.length || 0;
+      const grievances = (grievRes.data as any[]) || [];
+      const resolvedGrievances = grievances.filter((g) => g.status === 'Resolved').length;
+
       const summaryPayload = {
         generatedAt: new Date().toISOString(),
-        department: user.department || 'IT',
-        complianceScore: '94.2%',
-        totalCriteriaAudited: 12,
-        status: 'Approved for SSR Submission',
+        department: dept,
+        academicYear,
+        reportType,
+        auditStatus: 'Draft — Compiled from Live Department Records',
+        complianceAssessment: 'Pending External Institutional Committee Review',
+        metrics: {
+          enrolledStudents: studentCount,
+          activeFaculty: facultyCount,
+          studentFacultyRatio: facultyCount > 0 ? (studentCount / facultyCount).toFixed(1) : 'N/A',
+          totalGrievancesLogged: grievances.length,
+          resolvedGrievances,
+        },
+        telemetryVerified: true,
+        complianceNote: 'Live verified department telemetry recorded. Official accreditation compliance scoring requires institutional auditor review.',
       };
 
       const { error } = await (supabase.from('department_reports') as any).insert({
-        department: user.department || 'IT',
+        department: dept,
         title: title.trim(),
         report_type: reportType,
         academic_year: academicYear,
@@ -192,9 +216,9 @@ export default function HodReportsPage() {
                   </p>
                 </div>
 
-                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-xs text-emerald-950 flex items-center gap-2 font-medium">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Audit verification complete (Validated by HOD)</span>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 flex items-center gap-2 font-medium">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>{(rep.summary_json as any)?.auditStatus || 'Department Metrics Verified'}</span>
                 </div>
               </div>
 
