@@ -66,13 +66,28 @@ BEGIN
       NEW.role IS DISTINCT FROM OLD.role OR 
       NEW.is_active IS DISTINCT FROM OLD.is_active) THEN
     
+    -- Disallow any user (including HODs) from modifying their own role, department, or active status
+    IF OLD.id = auth.uid() THEN
+      RAISE EXCEPTION 'Unauthorized: Self-modification of department, role, or account status is strictly prohibited.';
+    END IF;
+
     SELECT role, department, (role = 'hod' AND is_active = true)
     INTO v_caller_role, v_caller_dept, v_caller_is_hod
     FROM public.profiles
     WHERE id = auth.uid();
 
     IF NOT COALESCE(v_caller_is_hod, false) THEN
-      RAISE EXCEPTION 'Unauthorized: Only department administrators can modify user department, role, or account status.';
+      RAISE EXCEPTION 'Unauthorized: Only active department administrators can modify user department, role, or account status.';
+    END IF;
+
+    -- An HOD cannot appoint or modify another HOD (requires institutional administrative provisioning)
+    IF (NEW.role = 'hod' OR OLD.role = 'hod') THEN
+      RAISE EXCEPTION 'Unauthorized: HOD appointments and status modifications require institutional administrative provisioning.';
+    END IF;
+
+    -- An HOD cannot reassign departments (requires institutional administrative provisioning)
+    IF NEW.department IS DISTINCT FROM OLD.department THEN
+      RAISE EXCEPTION 'Unauthorized: Inter-departmental user transfers require institutional administrative provisioning.';
     END IF;
 
     -- An HOD can only manage users within their own department
@@ -119,6 +134,11 @@ BEGIN
       NEW.cgpa IS DISTINCT FROM OLD.cgpa OR
       NEW.attendance_pct IS DISTINCT FROM OLD.attendance_pct OR
       NEW.backlog_count IS DISTINCT FROM OLD.backlog_count) THEN
+
+    -- Disallow any student or staff from self-modifying their own official academic records
+    IF OLD.id = auth.uid() THEN
+      RAISE EXCEPTION 'Unauthorized: Self-modification of official academic records is strictly prohibited.';
+    END IF;
 
     SELECT department, (role = 'hod' AND is_active = true)
     INTO v_caller_dept, v_caller_is_hod
