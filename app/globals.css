@@ -3,23 +3,105 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-glow: rgba(79, 70, 229, 0.15);
+  --accent-glow: rgba(59, 130, 246, 0.12);
 }
 
 @layer base {
   * {
     border-color: #e2e8f0;
   }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    background-color: #fafaf9; /* Warm off-white / ivory canvas */
+    background-color: #f8fafc;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.035) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.03) 0px, transparent 40%),
+      radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.02) 0px, transparent 60%);
+    background-attachment: fixed;
     color: var(--foreground);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    min-height: 100vh;
   }
 }
 
-/* Custom scrollbar */
+/* Glassmorphism & Surface Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 
+    0 1px 2px 0 rgba(0, 0, 0, 0.02),
+    0 4px 16px -2px rgba(15, 23, 42, 0.03),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  box-shadow: 
+    0 1px 3px 0 rgba(15, 23, 42, 0.03),
+    0 10px 30px -5px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(199, 210, 254, 0.9);
+  box-shadow: 
+    0 4px 6px -1px rgba(15, 23, 42, 0.04),
+    0 20px 40px -8px rgba(79, 70, 229, 0.07),
+    inset 0 1px 0 0 rgba(255, 255, 255, 1);
+}
+
+/* Luxury Form Field Focus Effect */
+.luxury-input-glow:focus-within {
+  border-color: #6366f1;
+  box-shadow: 
+    0 0 0 4px rgba(99, 102, 241, 0.1),
+    0 2px 8px -2px rgba(99, 102, 241, 0.15);
+}
+
+/* Subtle Shimmer Animation */
+@keyframes subtle-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: subtle-shimmer 2.5s infinite;
+}
+
+/* Custom Luxury Scrollbar */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
@@ -29,6 +111,11 @@
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
   border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }
 
 .no-scrollbar::-webkit-scrollbar {

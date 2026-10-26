@@ -7,6 +7,8 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -219,16 +221,15 @@ export default function StudentProjectsPage() {
         </div>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white rounded-[24px] border border-slate-200/60 p-4 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.02)]">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border-none bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-medium"
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white rounded-2xl sm:rounded-3xl border border-slate-200/70 p-4 shadow-xs">
+        <div className="w-full sm:w-80">
+          <Input
+            leadingIcon={<Search className="w-4 h-4" />}
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            showClear
+            onClear={() => setSearchQuery('')}
           />
         </div>
 
@@ -388,17 +389,14 @@ export default function StudentProjectsPage() {
                 autoFocus
               />
 
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Description</label>
-                <textarea
-                  rows={3}
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-colors"
-                  placeholder="Overview of project objectives, architecture, algorithms used..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+              <Textarea
+                label="Description"
+                required
+                rows={3}
+                placeholder="Overview of project objectives, architecture, algorithms used..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
 
               <Input
                 label="Technologies (Comma-separated)"
@@ -431,18 +429,15 @@ export default function StudentProjectsPage() {
                   value={teamMembers}
                   onChange={(e) => setTeamMembers(e.target.value)}
                 />
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Status</label>
-                  <select
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-colors"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                  >
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Planning">Planning</option>
-                  </select>
-                </div>
+                <Select
+                  label="Status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as any)}
+                >
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Planning">Planning</option>
+                </Select>
               </div>
 
               <div className="pt-4 flex gap-3">

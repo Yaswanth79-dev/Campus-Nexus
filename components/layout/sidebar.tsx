@@ -41,26 +41,30 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        'relative flex flex-col border border-slate-200/50 bg-white/60 backdrop-blur-3xl transition-all duration-300 ease-in-out select-none shrink-0 h-[calc(100vh-2rem)] my-4 ml-4 rounded-[20px] sticky top-4',
+        'relative flex flex-col border border-slate-200/70 bg-white/85 backdrop-blur-2xl transition-all duration-300 ease-in-out select-none shrink-0 h-[calc(100vh-2rem)] my-4 ml-4 rounded-3xl sticky top-4',
+        'shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04),inset_0_1px_0_rgba(255,255,255,0.9)]',
         isCollapsed ? 'w-20' : 'w-64',
         className
       )}
     >
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100/80">
         <Link
           href={`/${role.toLowerCase()}/dashboard`}
-          className="flex items-center gap-2.5 overflow-hidden"
+          className="flex items-center gap-2.5 overflow-hidden group"
           onClick={onItemClick}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
-            <Cpu className="w-4 h-4 text-white" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 via-indigo-600 to-blue-600 text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] transition-transform duration-200 group-hover:scale-105">
+            <Cpu className="w-5 h-5 text-white stroke-[2.2]" />
           </div>
 
           {!isCollapsed && (
             <div className="flex flex-col truncate ml-1">
-              <span className="font-bold tracking-tight text-slate-900 text-[13px] uppercase">
+              <span className="font-extrabold tracking-tight text-slate-900 text-sm">
                 Campus Nexus
+              </span>
+              <span className="text-[10px] font-medium text-slate-500 tracking-wider uppercase">
+                IT Department
               </span>
             </div>
           )}
@@ -69,11 +73,11 @@ export function Sidebar({
         {/* Desktop Collapse Toggle */}
         <button
           onClick={onToggleCollapse}
-          className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+          className="hidden lg:flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100/80 transition-colors cursor-pointer"
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {isCollapsed ? <ChevronRight className="w-4 h-4 stroke-[2.2]" /> : <ChevronLeft className="w-4 h-4 stroke-[2.2]" />}
         </button>
       </div>
 
@@ -104,21 +108,21 @@ export function Sidebar({
                     onClick={onItemClick}
                     title={isCollapsed ? item.title : undefined}
                     className={cn(
-                      'group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                      'group flex items-center justify-between rounded-xl px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200',
                       isActive
-                        ? 'bg-slate-900 text-white font-semibold'
-                        : 'text-slate-500 hover:bg-slate-100/50 hover:text-slate-900',
+                        ? 'bg-gradient-to-r from-slate-900 to-indigo-950 text-white font-semibold shadow-[0_2px_8px_rgba(15,23,42,0.18)]'
+                        : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900',
                       isCollapsed && 'justify-center px-0'
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <span
                         className={cn(
-                          'transition-colors',
-                          isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-500'
+                          'transition-colors duration-200',
+                          isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-700'
                         )}
                       >
-                        {getNavIcon(item.icon, 'w-4 h-4')}
+                        {getNavIcon(item.icon, 'w-4 h-4 stroke-[2.2]')}
                       </span>
 
                       {!isCollapsed && <span className="truncate">{item.title}</span>}
@@ -127,7 +131,7 @@ export function Sidebar({
                     {!isCollapsed && item.badge && (
                       <span
                         className={cn(
-                          'rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0',
+                          'rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0',
                           item.badgeVariant === 'primary' && 'bg-indigo-100 text-indigo-700',
                           item.badgeVariant === 'success' && 'bg-emerald-100 text-emerald-700',
                           item.badgeVariant === 'warning' && 'bg-amber-100 text-amber-800',
@@ -147,12 +151,14 @@ export function Sidebar({
         })}
       </div>
 
-        <div className="p-4 mt-auto">
-          <div className="rounded-xl p-3 border border-slate-200/50 bg-slate-50/50">
-            <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">{navConfig.portalTitle}</div>
-            <div className="text-[11px] font-semibold text-slate-700 mt-1">IT Department</div>
+      <div className="p-3 mt-auto">
+        <div className="rounded-2xl p-3 border border-slate-200/70 bg-slate-50/70 backdrop-blur-xs">
+          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+            {navConfig.portalTitle}
           </div>
+          <div className="text-xs font-bold text-slate-800 mt-0.5">Campus Intelligence</div>
         </div>
+      </div>
     </aside>
   );
 }

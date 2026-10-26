@@ -9,6 +9,8 @@ import { PageHeader } from '@/components/layout/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -259,34 +261,28 @@ export default function StudentInnovationPage() {
                 autoFocus
               />
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Domain</label>
-                <select
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={domain}
-                  onChange={(e) => setDomain(e.target.value)}
-                >
-                  <option value="Artificial Intelligence">Artificial Intelligence</option>
-                  <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
-                  <option value="Cloud & Distributed Systems">Cloud & Distributed Systems</option>
-                  <option value="Cybersecurity">Cybersecurity</option>
-                  <option value="HealthTech / MedTech">HealthTech / MedTech</option>
-                  <option value="FinTech">FinTech</option>
-                  <option value="EdTech">EdTech</option>
-                </select>
-              </div>
+              <Select
+                label="Domain"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+              >
+                <option value="Artificial Intelligence">Artificial Intelligence</option>
+                <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+                <option value="Cloud & Distributed Systems">Cloud & Distributed Systems</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="HealthTech / MedTech">HealthTech / MedTech</option>
+                <option value="FinTech">FinTech</option>
+                <option value="EdTech">EdTech</option>
+              </Select>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Description & Architecture</label>
-                <textarea
-                  rows={3}
-                  required
-                  className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Outline the problem statement, proposed solution, key novel innovation, and expected impact..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+              <Textarea
+                label="Description & Architecture"
+                rows={3}
+                required
+                placeholder="Outline the problem statement, proposed solution, key novel innovation, and expected impact..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
 
               <Input
                 label="Target Tech Stack (Comma-separated)"

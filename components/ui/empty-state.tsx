@@ -25,25 +25,25 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center p-10 sm:p-14 text-center rounded-[24px] border border-dashed border-slate-200 bg-white/50 backdrop-blur-sm',
+        'flex flex-col items-center justify-center p-10 sm:p-14 text-center rounded-2xl sm:rounded-3xl border border-dashed border-slate-300/80 bg-white/70 backdrop-blur-md shadow-xs',
         className
       )}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 mb-6 ring-[12px] ring-slate-50/50 shadow-xs">
-        {icon || <Inbox className="h-7 w-7 text-slate-400" />}
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 mb-5 ring-8 ring-indigo-50/50 shadow-xs">
+        {icon || <Inbox className="h-7 w-7 text-indigo-500 stroke-[1.8]" />}
       </div>
-      <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
-      <p className="text-sm text-slate-500 mt-2 max-w-md leading-relaxed">{description}</p>
+      <h4 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">{title}</h4>
+      <p className="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-md leading-relaxed">{description}</p>
       {actionLabel && (onAction || actionHref) && (
-        <div className="mt-5">
+        <div className="mt-6">
           {actionHref ? (
             <a href={actionHref}>
-              <Button size="sm" variant="primary">
+              <Button size="sm" variant="accent">
                 {actionLabel}
               </Button>
             </a>
           ) : (
-            <Button size="sm" variant="primary" onClick={onAction}>
+            <Button size="sm" variant="accent" onClick={onAction}>
               {actionLabel}
             </Button>
           )}

@@ -8,6 +8,8 @@ import { PageHeader } from '@/components/layout/page-header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -378,31 +380,25 @@ export default function StudentProfilePage() {
                     value={formData.dateOfBirth}
                     onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                   />
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Gender</label>
-                    <select
-                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.gender}
-                      onChange={(e) => handleInputChange('gender', e.target.value)}
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                      <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-                  </div>
+                  <Select
+                    label="Gender"
+                    value={formData.gender}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </Select>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Professional Bio</label>
-                  <textarea
-                    rows={3}
-                    className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Passionate IT student specializing in full-stack cloud applications, microservices, and distributed systems."
-                    value={formData.bio}
-                    onChange={(e) => handleInputChange('bio', e.target.value)}
-                  />
-                </div>
+                <Textarea
+                  label="Professional Bio"
+                  rows={3}
+                  placeholder="Passionate IT student specializing in full-stack cloud applications, microservices, and distributed systems."
+                  value={formData.bio}
+                  onChange={(e) => handleInputChange('bio', e.target.value)}
+                />
               </CardContent>
             </Card>
 
@@ -664,35 +660,29 @@ export default function StudentProfilePage() {
                   placeholder="e.g. Full-Stack / DevOps"
                 />
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Internship Status</label>
-                  <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.internshipStatus}
-                    onChange={(e) => handleInputChange('internshipStatus', e.target.value)}
-                  >
-                    <option value="Not Started">Not Started</option>
-                    <option value="Searching">Searching</option>
-                    <option value="Applied">Applied (In Interview)</option>
-                    <option value="Secured">Secured Offer</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
+                <Select
+                  label="Internship Status"
+                  value={formData.internshipStatus}
+                  onChange={(e) => handleInputChange('internshipStatus', e.target.value)}
+                >
+                  <option value="Not Started">Not Started</option>
+                  <option value="Searching">Searching</option>
+                  <option value="Applied">Applied (In Interview)</option>
+                  <option value="Secured">Secured Offer</option>
+                  <option value="Completed">Completed</option>
+                </Select>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Placement Readiness</label>
-                  <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.placementStatus}
-                    onChange={(e) => handleInputChange('placementStatus', e.target.value)}
-                  >
-                    <option value="Eligible">Eligible & Preparing</option>
-                    <option value="Applied">Applied for Drives</option>
-                    <option value="Offer Received">Offer Received</option>
-                    <option value="Placed">Placed</option>
-                    <option value="Higher Studies">Opting for Higher Studies</option>
-                  </select>
-                </div>
+                <Select
+                  label="Placement Readiness"
+                  value={formData.placementStatus}
+                  onChange={(e) => handleInputChange('placementStatus', e.target.value)}
+                >
+                  <option value="Eligible">Eligible & Preparing</option>
+                  <option value="Applied">Applied for Drives</option>
+                  <option value="Offer Received">Offer Received</option>
+                  <option value="Placed">Placed</option>
+                  <option value="Higher Studies">Opting for Higher Studies</option>
+                </Select>
               </CardContent>
             </Card>
 

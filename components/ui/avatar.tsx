@@ -43,7 +43,7 @@ export function Avatar({
           src={src}
           alt={name}
           className={cn(
-            'rounded-full object-cover border border-slate-200 shadow-xs',
+            'rounded-full object-cover border border-slate-200/80 shadow-xs ring-1 ring-black/[0.04]',
             sizeClasses[size],
             className
           )}
@@ -51,11 +51,11 @@ export function Avatar({
       ) : (
         <div
           className={cn(
-            'flex items-center justify-center rounded-full font-semibold select-none shadow-xs border',
-            role === 'student' && 'bg-blue-100 text-blue-800 border-blue-200',
-            role === 'faculty' && 'bg-indigo-100 text-indigo-800 border-indigo-200',
-            role === 'hod' && 'bg-slate-900 text-white border-slate-800',
-            !role && 'bg-slate-100 text-slate-700 border-slate-200',
+            'flex items-center justify-center rounded-full font-bold select-none shadow-xs border',
+            role === 'student' && 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-400/40 shadow-[0_2px_8px_rgba(59,130,246,0.25)]',
+            role === 'faculty' && 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white border-indigo-400/40 shadow-[0_2px_8px_rgba(79,70,229,0.25)]',
+            role === 'hod' && 'bg-gradient-to-br from-slate-900 to-indigo-950 text-white border-slate-700 shadow-[0_2px_8px_rgba(15,23,42,0.3)]',
+            !role && 'bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700 border-slate-300',
             sizeClasses[size],
             className
           )}
@@ -68,7 +68,7 @@ export function Avatar({
         <span
           title={role}
           className={cn(
-            'absolute bottom-0 right-0 rounded-full ring-2 ring-white',
+            'absolute bottom-0 right-0 rounded-full ring-2 ring-white shadow-xs',
             size === 'sm' && 'w-2 h-2',
             size === 'md' && 'w-2.5 h-2.5',
             size === 'lg' && 'w-3 h-3',

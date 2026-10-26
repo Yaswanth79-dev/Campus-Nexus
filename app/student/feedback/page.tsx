@@ -9,6 +9,8 @@ import { PageHeader } from '@/components/layout/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -256,45 +258,36 @@ export default function StudentFeedbackPage() {
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Category</label>
-                  <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </Select>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Target Recipient</label>
-                  <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={targetRole}
-                    onChange={(e) => setTargetRole(e.target.value as any)}
-                    disabled={isPrivateToHod}
-                  >
-                    <option value="both">Both Faculty & HOD</option>
-                    <option value="faculty">Faculty Mentor</option>
-                    <option value="hod">Head of Department (HOD)</option>
-                  </select>
-                </div>
+                <Select
+                  label="Target Recipient"
+                  value={targetRole}
+                  onChange={(e) => setTargetRole(e.target.value as any)}
+                  disabled={isPrivateToHod}
+                >
+                  <option value="both">Both Faculty & HOD</option>
+                  <option value="faculty">Faculty Mentor</option>
+                  <option value="hod">Head of Department (HOD)</option>
+                </Select>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Detailed Description</label>
-                <textarea
-                  rows={4}
-                  required
-                  className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Provide complete facts, dates, course codes, or infrastructure details..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+              <Textarea
+                label="Detailed Description"
+                rows={4}
+                required
+                placeholder="Provide complete facts, dates, course codes, or infrastructure details..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
 
               {/* Private to HOD Toggle */}
               <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 flex items-start gap-3">

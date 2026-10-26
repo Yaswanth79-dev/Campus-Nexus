@@ -50,7 +50,7 @@ export function MobileNav({ isOpen, onClose, role }: MobileNavProps) {
           isCollapsed={false}
           onToggleCollapse={() => {}}
           onItemClick={onClose}
-          className="w-full h-full border-r-0"
+          className="w-full h-full my-0 ml-0 rounded-none border-0 shadow-none bg-white"
         />
       </div>
     </div>

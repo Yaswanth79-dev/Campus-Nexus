@@ -8,6 +8,7 @@ import { Tables } from '@/types/database';
 import { PageHeader } from '@/components/layout/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -209,18 +210,15 @@ export default function FacultyConcernsPage() {
                 <p className="text-xs text-slate-600 leading-relaxed">{selectedConcern.description}</p>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Official Response / Action Taken</label>
-                <textarea
-                  rows={4}
-                  required
-                  className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="State the resolution, meeting time, or instructions provided to the student..."
-                  value={responseText}
-                  onChange={(e) => setResponseText(e.target.value)}
-                  autoFocus
-                />
-              </div>
+              <Textarea
+                label="Official Response / Action Taken"
+                rows={4}
+                required
+                placeholder="State the resolution, meeting time, or instructions provided to the student..."
+                value={responseText}
+                onChange={(e) => setResponseText(e.target.value)}
+                autoFocus
+              />
 
               <div className="pt-2 flex flex-col sm:flex-row gap-2">
                 <Button

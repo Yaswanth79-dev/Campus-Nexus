@@ -7,6 +7,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Tables } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -362,31 +363,25 @@ export default function StudentInternshipsPage() {
               />
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Type</label>
-                  <select
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-colors"
-                    value={internshipType}
-                    onChange={(e) => setInternshipType(e.target.value)}
-                  >
-                    {TYPES.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Type"
+                  value={internshipType}
+                  onChange={(e) => setInternshipType(e.target.value)}
+                >
+                  {TYPES.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </Select>
 
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-2">Status</label>
-                  <select
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-colors"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                  >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as any)}
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </Select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
